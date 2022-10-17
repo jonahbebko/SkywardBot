@@ -66,7 +66,7 @@ async def casterinfo(ctx):
         await ctx.respond(embed=discord.Embed(
             color=0x429B97,
             title="Caster Info",
-            description="<:dot:1022316227131080797> You can see caster availability [here!](https://docs.google.com/spreadsheets/d/1YfXo1ehAI8GDIiwG6dI09_In2VbxX7TjwBLA0Lgs430/edit?usp=sharing)"
+            description="<:dot:1031708752140832768> You can see caster availability [here!](https://docs.google.com/spreadsheets/d/1YfXo1ehAI8GDIiwG6dI09_In2VbxX7TjwBLA0Lgs430/edit?usp=sharing)"
         ))
     else:
         await ctx.respond("This is a DMs-only command.")
@@ -83,7 +83,7 @@ async def report(ctx, week: int, team_one_tag: str, score: str, team_two_tag: st
         else:
             who_won = f"**{team_one_tag}** and **{team_two_tag}** tied"
 
-        await bot.get_channel(1025198171435049032).send("<@&991633204874326136>", embed=discord.Embed(
+        await bot.get_channel(1025198171435049032).send("<@&1022316227131080797>", embed=discord.Embed(
             color=0x429B97,
             title=f"{team_one_tag} vs. {team_two_tag} - Reported Match",
             description=f"**Week {week}**\n{who_won} with a score of **{score}**"
