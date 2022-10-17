@@ -66,7 +66,7 @@ async def casterinfo(ctx):
         await ctx.respond(embed=discord.Embed(
             color=0x429B97,
             title="Caster Info",
-            description="<:dot:1022299193739579402> You can see caster availability [here!](https://docs.google.com/spreadsheets/d/1YfXo1ehAI8GDIiwG6dI09_In2VbxX7TjwBLA0Lgs430/edit?usp=sharing)"
+            description="<:dot:1022316227131080797> You can see caster availability [here!](https://docs.google.com/spreadsheets/d/1YfXo1ehAI8GDIiwG6dI09_In2VbxX7TjwBLA0Lgs430/edit?usp=sharing)"
         ))
     else:
         await ctx.respond("This is a DMs-only command.")
