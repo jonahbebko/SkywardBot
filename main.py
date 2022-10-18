@@ -103,7 +103,7 @@ async def report(ctx, week: int, team_one_tag: str, score: str, team_two_tag: st
 async def requestcaster(ctx, day: str, time: str):
     if ctx.channel.type == discord.ChannelType.private:
         await ctx.respond(
-            "Please enter the number cooresponding to the caster you would like to request:\n",
+            "Please enter the number corresponding to the caster you would like to request:\n",
             embed=discord.Embed(
                 color=0x429B97,
                 title="Caster Request Numbers",
