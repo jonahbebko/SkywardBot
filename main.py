@@ -25,8 +25,12 @@ responds with benjamin
 
 """
 
+import json
 import discord
 from datetime import datetime
+
+with open('ids.json') as f:
+    ids = json.load(f)
 
 bot = discord.Bot()
 
@@ -96,9 +100,24 @@ async def report(ctx, week: int, team_one_tag: str, score: str, team_two_tag: st
         await ctx.respond("This is a DMs-only command.")
 
 @bot.slash_command(name = "requestcaster", description = "Used to request a caster, said caster is then pinged in a designated channel with the info.")
-async def requestcaster(ctx, caster_id: str, day: str, time: str):
+async def requestcaster(ctx, day: str, time: str):
     if ctx.channel.type == discord.ChannelType.private:
-        await bot.get_channel(1025196891794853888).send(f"<@{caster_id}>\n{ctx.author} has requested you to cast for them on {day} at {time}")
+        await ctx.respond(
+            "Please enter the number cooresponding to the caster you would like to request:\n",
+            embed=discord.Embed(
+                color=0x429B97,
+                title="Caster Request Numbers",
+                description="\n".join([f"{i+1}. {caster}" for i, caster in enumerate(ids)])
+            )
+        )
+        msg = await bot.wait_for("message", check=lambda m: m.author == ctx.author)
+        await bot.get_channel(1025196891794853888).send(
+            f"<@{[i for i in ids.values()][int(msg.content)-1]}>",
+            embed=discord.Embed(
+                title="Caster Request",
+                description=f"\n{ctx.author} has requested a caster for **{day}** at **{time}**"
+            )
+        )
         await ctx.respond("Caster request sent.")
     else:
         await ctx.respond("This is a DMs-only command.")
