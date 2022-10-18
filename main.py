@@ -122,5 +122,12 @@ async def requestcaster(ctx, day: str, time: str):
     else:
         await ctx.respond("This is a DMs-only command.")
 
-with open("token.txt") as token:
-    bot.run(token.read())
+try:
+    open("token.txt").close()
+except FileNotFoundError:
+    token = input("Enter token: ")
+else:
+    with open("token.txt") as f:
+        token = f.read()
+
+bot.run(token)
