@@ -1,3 +1,4 @@
 token.txt
 log.txt
-*.sh
+restart
+stop
