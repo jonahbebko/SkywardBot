@@ -57,8 +57,9 @@ async def benjamin(ctx):
 async def dm(ctx, role: discord.Role, message: str):
     if ctx.author.guild_permissions.administrator:
         await ctx.respond(f"Sending message to all members with role **\"{role}\"** (ID: {role.id})...")
+        # send message to all members with role
         for member in role.members:
-            await member.send(message)
+            await member.send(f"**{ctx.author}** says:\n{message}")
         await ctx.send("Sent.")
     else:
         await ctx.respond("You must be an administrator to use this command.")
