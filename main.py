@@ -35,7 +35,10 @@ from datetime import datetime
 with open('ids.json') as f:
     ids = json.load(f)
 
-bot = discord.Bot()
+intents = discord.Intents.default()
+intents.members = True
+
+bot = discord.Bot(intents=intents)
 
 @bot.event
 async def on_ready():
