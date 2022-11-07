@@ -137,7 +137,7 @@ if len(sys.argv) == 1:
                 "PLEASE CHECK CASTER SCHEDULES WITH /casterinfo BEFORE REQUESTING A CASTER\n" + \
                 "React with :white_check_mark: to confirm that you have checked the caster schedules and would like to request a caster."
             )
-            ctx.add_reaction(":white_check_mark:")
+            ctx.message.add_reaction(":white_check_mark:")
             try:
                 reaction, user = await bot.wait_for("reaction_add", timeout=30.0, check=lambda reaction, user: reaction.emoji == ":white_check_mark:" and user == ctx.author)
             except asyncio.TimeoutError:
