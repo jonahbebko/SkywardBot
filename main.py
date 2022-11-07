@@ -33,6 +33,7 @@ import discord
 import sys
 import datetime
 import re
+import asyncio
 
 intents = discord.Intents.default()
 intents.members = True
@@ -133,12 +134,15 @@ if len(sys.argv) == 1:
                 await ctx.respond(f"**Error** in parameter **day**, given '{day}'\nDay must be in the format `MM/DD`")
                 return
             await ctx.respond(
-                "PLEASE CHECK CASTER SCHEDULES WITH /casterinfo BEFORE REQUESTING A CASTER\n \
-                Type `yes` if you have checked the schedule and would like to request a caster."
+                "PLEASE CHECK CASTER SCHEDULES WITH /casterinfo BEFORE REQUESTING A CASTER\n" + \
+                "React with :white_check_mark: to confirm that you have checked the caster schedules and would like to request a caster."
             )
-            msg = await bot.wait_for("message", check=lambda m: m.author == ctx.author and m.channel == ctx.channel)
-            if msg.lower() != "yes": await ctx.respond("Request cancelled."); return
-            await ctx.message.add_reaction(":white_check_mark:")
+            ctx.add_reaction(":white_check_mark:")
+            try:
+                reaction, user = await bot.wait_for("reaction_add", timeout=30.0, check=lambda reaction, user: reaction.emoji == ":white_check_mark:" and user == ctx.author)
+            except asyncio.TimeoutError:
+                await ctx.respond("Request timed out after 30 seconds, please try again.")
+                return
             await ctx.send(
                 "Please enter the number corresponding to the caster you would like to request:\n",
                 embed=discord.Embed(
