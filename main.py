@@ -167,15 +167,7 @@ else:
     @bot.event
     async def on_ready():
         print(f"{bot.user} is online")
-        await bot.change_presence(
-            activity=discord.Activity(
-                name="Under Maintenance",
-                emoji=discord.PartialEmoji(
-                    name="warning",
-                    id=1031708752140832768
-                )
-            )
-        )
+        await bot.change_presence(activity=discord.Activity(name="Under Maintenance"))
     
     @bot.slash_command(name="ping", description="Sends the bot's latency.")
     async def ping(ctx):
