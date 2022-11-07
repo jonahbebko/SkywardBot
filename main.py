@@ -131,17 +131,21 @@ if len(sys.argv) == 1:
         if ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664:
             # check if day in MM/DD format using regex
             if not re.match(r"^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$", day):
-                await ctx.respond(f"**Error** in parameter **day**, given '{day}'\nDay must be in the format `MM/DD`")
+                await ctx.respond(f"**Error** in parameter **day**, given '{day}'\nDay must be a valid day, and in the format `MM/DD`")
                 return
             await ctx.respond(
-                "PLEASE CHECK CASTER SCHEDULES WITH /casterinfo BEFORE REQUESTING A CASTER\n" + \
-                "React with :white_check_mark: to confirm that you have checked the caster schedules and would like to request a caster."
+                embed=discord.Embed(
+                    description="**PLEASE CHECK CASTER SCHEDULES WITH /casterinfo BEFORE REQUESTING A CASTER**\n" + \
+                    "Respond 'yes' to confirm you've checked the schedule."
+                )
             )
-            ctx.message.add_reaction(":white_check_mark:")
             try:
-                reaction, user = await bot.wait_for("reaction_add", timeout=30.0, check=lambda reaction, user: reaction.emoji == ":white_check_mark:" and user == ctx.author)
+                msg = await bot.wait_for("message", check=lambda m: m.author == ctx.author, timeout=20)
             except asyncio.TimeoutError:
-                await ctx.respond("Request timed out after 30 seconds, please try again.")
+                await ctx.respond("Confirmation timed out after 20 seconds, please try again.")
+                return
+            if msg.content.lower() != "yes":
+                await msg.respond("Confirmation failed, please try again.")
                 return
             await ctx.send(
                 "Please enter the number corresponding to the caster you would like to request:\n",
@@ -151,7 +155,11 @@ if len(sys.argv) == 1:
                     description="\n".join([f"{i+1}. {caster}" for i, caster in enumerate(ids)])
                 )
             )
-            msg = await bot.wait_for("message", check=lambda m: m.author == ctx.author and m.channel == ctx.channel)
+            try:
+                msg = await bot.wait_for("message", check=lambda m: m.author == ctx.author, timeout=20)
+            except asyncio.TimeoutError:
+                await ctx.respond("Request timed out after 20 seconds, please try again.")
+                return
             if msg.content == "joner":
                 await bot.get_channel(1025196891794853888).send(f"<@{ctx.author.id}>\nYou can't request joner, he's not a caster. But this test works, so that's good.\nparameters: `{day}`, `{time}`")
                 return
