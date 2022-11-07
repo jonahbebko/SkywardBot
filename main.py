@@ -32,6 +32,7 @@ import json
 import discord
 import sys
 import datetime
+import re
 
 intents = discord.Intents.default()
 intents.members = True
@@ -127,9 +128,8 @@ if len(sys.argv) == 1:
     ])
     async def requestcaster(ctx, day, time):
         if ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664:
-            try:
-                datetime.strptime(day, "%m/%d")
-            except:
+            # check if day in MM/DD format using regex
+            if not re.match(r"^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$", day):
                 await ctx.respond(f"**Error** in parameter **day**, given '{day}'\nDay must be in the format `MM/DD`")
                 return
             await ctx.respond(
