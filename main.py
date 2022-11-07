@@ -30,127 +30,166 @@ responds with benjamin
 
 import json
 import discord
+import sys
 from datetime import datetime
-
-with open('ids.json') as f:
-    ids = json.load(f)
 
 intents = discord.Intents.default()
 intents.members = True
 
 bot = discord.Bot(intents=intents)
 
-@bot.event
-async def on_ready():
-    print(f"{bot.user} is online")
+if len(sys.argv) == 1:
 
-@bot.slash_command(name="ping", description="Sends the bot's latency.")
-async def ping(ctx):
-    await ctx.respond(f"Pong! Latency is {str(1000.0*bot.latency)[:5]}ms.")
+    with open('ids.json') as f:
+        ids = json.load(f)
 
-@bot.slash_command(name="flipout", description="flipout")
-async def flipout(ctx):
-    await ctx.respond("flipout :kissing_heart:")
+    @bot.event
+    async def on_ready():
+        print(f"{bot.user} is online")
 
-@bot.slash_command(name="benjamin", description="benjamin")
-async def benjamin(ctx):
-    await ctx.respond("benjamin :flushed:")
+    @bot.slash_command(name="ping", description="Sends the bot's latency.")
+    async def ping(ctx):
+        await ctx.respond(f"Pong! Latency is {str(1000.0*bot.latency)[:5]}ms.")
 
-@bot.slash_command(name="dm", description="Sends a message in dms to everyone with the pinged role.")
-async def dm(ctx, role: discord.Role, message: str):
-    if ctx.author.guild_permissions.administrator:
-        await ctx.respond(f"Sending message to all members with role **\"{role}\"** (ID: {role.id})...")
-        # send message to all members with role
-        for member in role.members:
-            await member.send(f"**{ctx.author}** says:\n{message}")
-        await ctx.send("Sent.")
-    else:
-        await ctx.respond("You must be an administrator to use this command.")
-        today = datetime.now().strftime("%m/%d/%y %H:%M:%S")
-        with open("log.txt", "w+") as logf:
-            logf.write(f"[{today}] {ctx.author} attempted to use /dm on role \"{role}\" with message \"{message}\"")
-        print(f"[{today}] {ctx.author} attempted to use /dm on role \"{role}\" with message \"{message}\"")
+    @bot.slash_command(name="flipout", description="flipout")
+    async def flipout(ctx):
+        await ctx.respond("flipout :kissing_heart:")
 
-@bot.slash_command(name="casterinfo", description="Sends a list of caster availability.")
-async def casterinfo(ctx):
-    if ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664:
-        await ctx.respond(embed=discord.Embed(
-            color=0x429B97,
-            title="Caster Info",
-            description="<:dot:1031708752140832768> You can see caster availability [here!](https://docs.google.com/spreadsheets/d/1YfXo1ehAI8GDIiwG6dI09_In2VbxX7TjwBLA0Lgs430/edit?usp=sharing)"
-        ))
-    else:
-        await ctx.respond("This is a DMs-only command.")
+    @bot.slash_command(name="benjamin", description="benjamin")
+    async def benjamin(ctx):
+        await ctx.respond("benjamin :flushed:")
 
-@bot.slash_command(name="report", description="Used to report match, sends the info to a designated channel.", options=[
-    discord.Option(name="week", description="Week of the match", type=int, required=True),
-    discord.Option(name="team_one_tag", description="Tag of the first team", type=str, required=True),
-    discord.Option(name="score", description="Score of the match", type=str, required=True),
-    discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True)
-])
-async def report(ctx, week, team_one_tag, score, team_two_tag):
-    if ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664:
-        try: int(week)
-        except: await ctx.respond(f"**Error** in parameter **week**, given '{week}'\nWeek must be a number."); return
-
-        try: int(score.split("-")[0])
-        except: await ctx.respond(f"**Error** in parameter **score**, given '{score}'\nScore must be in the format `a-b` where `a` and `b` are both numbers."); return
-        
-        temp = [int(i) for i in score.split("-")]
-
-        if temp[0] > temp[1]:
-            who_won = f"**{team_one_tag}** won against **{team_two_tag}**"
-        elif temp[0] < temp[1]:
-            who_won = f"**{team_one_tag}** lost to **{team_two_tag}**"
+    @bot.slash_command(name="dm", description="Sends a message in dms to everyone with the pinged role.")
+    async def dm(ctx, role: discord.Role, message: str):
+        if ctx.author.guild_permissions.administrator:
+            await ctx.respond(f"Sending message to all members with role **\"{role}\"** (ID: {role.id})...")
+            # send message to all members with role
+            for member in role.members:
+                await member.send(f"**{ctx.author}** says:\n{message}")
+            await ctx.send("Sent.")
         else:
-            who_won = f"**{team_one_tag}** and **{team_two_tag}** tied"
+            await ctx.respond("You must be an administrator to use this command.")
+            today = datetime.now().strftime("%m/%d/%y %H:%M:%S")
+            with open("log.txt", "w+") as logf:
+                logf.write(f"[{today}] {ctx.author} attempted to use /dm on role \"{role}\" with message \"{message}\"")
+            print(f"[{today}] {ctx.author} attempted to use /dm on role \"{role}\" with message \"{message}\"")
 
-        await bot.get_channel(1025198171435049032).send(("<@&1022316227131080797>" if NUTSDEEZ else ""), embed=discord.Embed(
-            color=0x429B97,
-            title=f"{team_one_tag} vs. {team_two_tag} - Reported Match",
-            description=f"**Week {week}**\n{who_won} with a score of **{score}**"
-        ).set_author(
-            name=ctx.author.display_name,
-            icon_url=ctx.author.display_avatar
-        ))
-        await ctx.respond("Report sent.")
-    else:
-        await ctx.respond("This is a DMs-only command.")
-
-@bot.slash_command(name="requestcaster", description="Used to request a caster, said caster is then pinged in a designated channel with the info.", options=[
-                    discord.Option(name="day", description="Day of the match", type=str),
-                    discord.Option(name="time", description="Time of the match (THIS MUST BE IN EST)", type=str),
-])
-async def requestcaster(ctx, day, time):
-    if ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664:
-        await ctx.respond(
-            "Please enter the number corresponding to the caster you would like to request:\n",
-            embed=discord.Embed(
+    @bot.slash_command(name="casterinfo", description="Sends a list of caster availability.")
+    async def casterinfo(ctx):
+        if ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664:
+            await ctx.respond(embed=discord.Embed(
                 color=0x429B97,
-                title="Caster Request Numbers",
-                description="\n".join([f"{i+1}. {caster}" for i, caster in enumerate(ids)])
+                title="Caster Info",
+                description="<:dot:1031708752140832768> You can see caster availability [here!](https://docs.google.com/spreadsheets/d/1YfXo1ehAI8GDIiwG6dI09_In2VbxX7TjwBLA0Lgs430/edit?usp=sharing)"
+            ))
+        else:
+            await ctx.respond("This is a DMs-only command.")
+
+    @bot.slash_command(name="report", description="Used to report match, sends the info to a designated channel.", options=[
+        discord.Option(name="week", description="Week of the match", type=int, required=True),
+        discord.Option(name="team_one_tag", description="Tag of the first team", type=str, required=True),
+        discord.Option(name="score", description="Score of the match", type=str, required=True),
+        discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True)
+    ])
+    async def report(ctx, week, team_one_tag, score, team_two_tag):
+        if ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664:
+            try: int(week)
+            except: await ctx.respond(f"**Error** in parameter **week**, given '{week}'\nWeek must be a number."); return
+
+            try: int(score.split("-")[0])
+            except: await ctx.respond(f"**Error** in parameter **score**, given '{score}'\nScore must be in the format `a-b` where `a` and `b` are both numbers."); return
+            
+            temp = [int(i) for i in score.split("-")]
+
+            if temp[0] > temp[1]:
+                who_won = f"**{team_one_tag}** won against **{team_two_tag}**"
+            elif temp[0] < temp[1]:
+                who_won = f"**{team_one_tag}** lost to **{team_two_tag}**"
+            else:
+                who_won = f"**{team_one_tag}** and **{team_two_tag}** tied"
+
+            await bot.get_channel(1025198171435049032).send(("<@&1022316227131080797>" if NUTSDEEZ else ""), embed=discord.Embed(
+                color=0x429B97,
+                title=f"{team_one_tag} vs. {team_two_tag} - Reported Match",
+                description=f"**Week {week}**\n{who_won} with a score of **{score}**"
+            ).set_author(
+                name=ctx.author.display_name,
+                icon_url=ctx.author.display_avatar
+            ))
+            await ctx.respond("Report sent.")
+        else:
+            await ctx.respond("This is a DMs-only command.")
+
+    @bot.slash_command(name="requestcaster", description="Used to request a caster, said caster is then pinged in a designated channel with the info.", options=[
+                        discord.Option(name="day", description="Day of the match", type=str),
+                        discord.Option(name="time", description="Time of the match (THIS MUST BE IN EST)", type=str),
+    ])
+    async def requestcaster(ctx, day, time):
+        if ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664:
+            await ctx.respond(
+                "Please enter the number corresponding to the caster you would like to request:\n",
+                embed=discord.Embed(
+                    color=0x429B97,
+                    title="Caster Request Numbers",
+                    description="\n".join([f"{i+1}. {caster}" for i, caster in enumerate(ids)])
+                )
             )
-        )
-        msg = await bot.wait_for("message", check=lambda m: m.author == ctx.author)
-        if msg.content == "joner":
-            await bot.get_channel(1025196891794853888).send(f"<@{ctx.author.id}>\nYou can't request joner, he's not a caster. But this test works, so that's good.\nparameters: `{day}`, `{time}`")
-            return
-        await bot.get_channel(1025196891794853888).send(
-            f"<@{[i for i in ids.values()][int(msg.content)-1]}>",
-            embed=discord.Embed(
-                title="Caster Request",
-                description=f"\n{ctx.author} has requested a caster for **{day}** at **{time}**"
+            msg = await bot.wait_for("message", check=lambda m: m.author == ctx.author)
+            if msg.content == "joner":
+                await bot.get_channel(1025196891794853888).send(f"<@{ctx.author.id}>\nYou can't request joner, he's not a caster. But this test works, so that's good.\nparameters: `{day}`, `{time}`")
+                return
+            await bot.get_channel(1025196891794853888).send(
+                f"<@{[i for i in ids.values()][int(msg.content)-1]}>",
+                embed=discord.Embed(
+                    title="Caster Request",
+                    description=f"\n{ctx.author} has requested a caster for **{day}** at **{time}**"
+                )
             )
-        )
-        await ctx.respond("Caster request sent.")
-    else:
-        await ctx.respond("This is a DMs-only command.")
+            await ctx.respond("Caster request sent.")
+        else:
+            await ctx.respond("This is a DMs-only command.")
+
+else:
+
+    @bot.event
+    async def on_ready():
+        print(f"{bot.user} is online")
     
-@bot.slash_command(name="test", description="testing command for parameter autocomplete", options=[
-    discord.Option(name="day", description="Day of the week.", type=3, required=True)
-])
-async def test(ctx, day):
-    await ctx.respond(f"Day: {day}")
+    @bot.slash_command(name="ping", description="Sends the bot's latency.")
+    async def ping(ctx):
+        await ctx.respond(f"Pong! Latency is {str(1000.0*bot.latency)[:5]}ms.")
+
+    @bot.slash_command(name="flipout", description="flipout")
+    async def flipout(ctx):
+        await ctx.respond("flipout :kissing_heart:")
+
+    @bot.slash_command(name="benjamin", description="benjamin")
+    async def benjamin(ctx):
+        await ctx.respond("benjamin :flushed:")
+
+    @bot.slash_command(name="dm", description="Sends a message in dms to everyone with the pinged role.")
+    async def dm(ctx, role: discord.Role, message: str):
+        await ctx.respond("Skyward is currently under maintenance, please try again later.")
+
+    @bot.slash_command(name="casterinfo", description="Sends a list of caster availability.")
+    async def casterinfo(ctx):
+        await ctx.respond("Skyward is currently under maintenance, please try again later.")
+
+    @bot.slash_command(name="report", description="Used to report match, sends the info to a designated channel.", options=[
+        discord.Option(name="week", description="Week of the match", type=int, required=True),
+        discord.Option(name="team_one_tag", description="Tag of the first team", type=str, required=True),
+        discord.Option(name="score", description="Score of the match", type=str, required=True),
+        discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True)
+    ])
+    async def report(ctx, week, team_one_tag, score, team_two_tag):
+        await ctx.respond("Skyward is currently under maintenance, please try again later.")
+
+    @bot.slash_command(name="requestcaster", description="Used to request a caster, said caster is then pinged in a designated channel with the info.", options=[
+                        discord.Option(name="day", description="Day of the match", type=str),
+                        discord.Option(name="time", description="Time of the match (THIS MUST BE IN EST)", type=str),
+    ])
+    async def requestcaster(ctx, day, time):
+        await ctx.respond("Skyward is currently under maintenance, please try again later.")
 
 try:
     open("token.txt").close()
