@@ -1,5 +1,5 @@
 # ping helpers?
-NUTSDEEZ = True
+PINGHELPERS = True
 
 """
 
@@ -46,6 +46,7 @@ if len(sys.argv) == 1:
     @bot.event
     async def on_ready():
         print(f"{bot.user} is online")
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Skyward Series"))
 
     @bot.slash_command(name="ping", description="Sends the bot's latency.")
     async def ping(ctx):
@@ -108,7 +109,7 @@ if len(sys.argv) == 1:
             else:
                 who_won = f"**{team_one_tag}** and **{team_two_tag}** tied"
 
-            await bot.get_channel(1025198171435049032).send(("<@&1022316227131080797>" if NUTSDEEZ else ""), embed=discord.Embed(
+            await bot.get_channel(1025198171435049032).send(("<@&1022316227131080797>" if PINGHELPERS else ""), embed=discord.Embed(
                 color=0x429B97,
                 title=f"{team_one_tag} vs. {team_two_tag} - Reported Match",
                 description=f"**Week {week}**\n{who_won} with a score of **{score}**"
@@ -126,7 +127,19 @@ if len(sys.argv) == 1:
     ])
     async def requestcaster(ctx, day, time):
         if ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664:
+            try:
+                datetime.strptime(day, "%m/%d")
+            except:
+                await ctx.respond(f"**Error** in parameter **day**, given '{day}'\nDay must be in the format `MM/DD`.")
+                return
             await ctx.respond(
+                "PLEASE CHECK CASTER SCHEDULES WITH /casterinfo BEFORE REQUESTING A CASTER\n \
+                Type `yes` if you have checked the schedule and would like to request a caster."
+            )
+            msg = await bot.wait_for("message", check=lambda m: m.author == ctx.author and m.channel == ctx.channel)
+            if msg.lower() != "yes": await ctx.respond("Request cancelled."); return
+            await ctx.message.add_reaction(":white_check_mark:")
+            await ctx.send(
                 "Please enter the number corresponding to the caster you would like to request:\n",
                 embed=discord.Embed(
                     color=0x429B97,
@@ -134,7 +147,7 @@ if len(sys.argv) == 1:
                     description="\n".join([f"{i+1}. {caster}" for i, caster in enumerate(ids)])
                 )
             )
-            msg = await bot.wait_for("message", check=lambda m: m.author == ctx.author)
+            msg = await bot.wait_for("message", check=lambda m: m.author == ctx.author and m.channel == ctx.channel)
             if msg.content == "joner":
                 await bot.get_channel(1025196891794853888).send(f"<@{ctx.author.id}>\nYou can't request joner, he's not a caster. But this test works, so that's good.\nparameters: `{day}`, `{time}`")
                 return
@@ -154,6 +167,15 @@ else:
     @bot.event
     async def on_ready():
         print(f"{bot.user} is online")
+        await bot.change_presence(
+            activity=discord.Activity(
+                name="Under Maintenance",
+                emoji=discord.PartialEmoji(
+                    name="warning",
+                    id=1031708752140832768
+                )
+            )
+        )
     
     @bot.slash_command(name="ping", description="Sends the bot's latency.")
     async def ping(ctx):
