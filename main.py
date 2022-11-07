@@ -169,11 +169,11 @@ else:
 
     @bot.slash_command(name="dm", description="Sends a message in dms to everyone with the pinged role.")
     async def dm(ctx, role: discord.Role, message: str):
-        await ctx.respond("Skyward is currently under maintenance, please try again later.")
+        await ctx.respond("SkywardBot is currently under maintenance, please try again later.")
 
     @bot.slash_command(name="casterinfo", description="Sends a list of caster availability.")
     async def casterinfo(ctx):
-        await ctx.respond("Skyward is currently under maintenance, please try again later.")
+        await ctx.respond("SkywardBot is currently under maintenance, please try again later.")
 
     @bot.slash_command(name="report", description="Used to report match, sends the info to a designated channel.", options=[
         discord.Option(name="week", description="Week of the match", type=int, required=True),
@@ -182,14 +182,14 @@ else:
         discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True)
     ])
     async def report(ctx, week, team_one_tag, score, team_two_tag):
-        await ctx.respond("Skyward is currently under maintenance, please try again later.")
+        await ctx.respond("SkywardBot is currently under maintenance, please try again later.")
 
     @bot.slash_command(name="requestcaster", description="Used to request a caster, said caster is then pinged in a designated channel with the info.", options=[
                         discord.Option(name="day", description="Day of the match", type=str),
                         discord.Option(name="time", description="Time of the match (THIS MUST BE IN EST)", type=str),
     ])
     async def requestcaster(ctx, day, time):
-        await ctx.respond("Skyward is currently under maintenance, please try again later.")
+        await ctx.respond("SkywardBot is currently under maintenance, please try again later.")
 
 try:
     open("token.txt").close()
