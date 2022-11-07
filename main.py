@@ -31,7 +31,7 @@ responds with benjamin
 import json
 import discord
 import sys
-from datetime import datetime
+import datetime
 
 intents = discord.Intents.default()
 intents.members = True
@@ -70,7 +70,7 @@ if len(sys.argv) == 1:
             await ctx.send("Sent.")
         else:
             await ctx.respond("You must be an administrator to use this command.")
-            today = datetime.now().strftime("%m/%d/%y %H:%M:%S")
+            today = datetime.datetime.now().strftime("%m/%d/%y %H:%M:%S")
             with open("log.txt", "w+") as logf:
                 logf.write(f"[{today}] {ctx.author} attempted to use /dm on role \"{role}\" with message \"{message}\"")
             print(f"[{today}] {ctx.author} attempted to use /dm on role \"{role}\" with message \"{message}\"")
@@ -130,7 +130,7 @@ if len(sys.argv) == 1:
             try:
                 datetime.strptime(day, "%m/%d")
             except:
-                await ctx.respond(f"**Error** in parameter **day**, given '{day}'\nDay must be in the format `MM/DD`.")
+                await ctx.respond(f"**Error** in parameter **day**, given '{day}'\nDay must be in the format `MM/DD`")
                 return
             await ctx.respond(
                 "PLEASE CHECK CASTER SCHEDULES WITH /casterinfo BEFORE REQUESTING A CASTER\n \
