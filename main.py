@@ -1,5 +1,5 @@
 # ping helpers?
-PINGHELPERS = True
+PINGHELPERS = False
 
 """
 
