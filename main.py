@@ -179,9 +179,9 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
         discord.Option(name="week", description="Week of the match", type=int, required=True),
         discord.Option(name="team_one_tag", description="Tag of the first team (if single FF, this is the FFing team)", type=str, required=True),
         discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True),
-        discord.Option(name="type", description="Type of forfeit - must be 'single' or 'double'", type=str, required=True, choices=[
-            discord.Choice(name="single", value="forfeit"),
-            discord.Choice(name="double", value="double")
+        discord.Option(name="type", description="Type of forfeit - must be 'single' or 'double'", type=str, required=True, options=[
+            discord.Option(name="single", description="Single forfeit.", type=str, required=True),
+            discord.Option(name="double", description="Double forfeit.", type=str, required=True)
         ])
     ])
     async def forfeit(ctx, week, team_one_tag, team_two_tag, type):
@@ -324,9 +324,9 @@ else:
         discord.Option(name="week", description="Week of the match", type=int, required=True),
         discord.Option(name="team_one_tag", description="Tag of the first team (if single FF, this is the FFing team)", type=str, required=True),
         discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True),
-        discord.Option(name="type", description="Type of forfeit - must be 'single' or 'double'", type=str, required=True, choices=[
-            discord.Choice(name="single", value="forfeit"),
-            discord.Choice(name="double", value="double")
+        discord.Option(name="type", description="Type of forfeit - must be 'single' or 'double'", type=str, required=True, options=[
+            discord.Option(name="single", description="Single forfeit.", type=str, required=True),
+            discord.Option(name="double", description="Double forfeit.", type=str, required=True)
         ])
     ])
     async def forfeit(ctx, week, team_one_tag, team_two_tag, type):
