@@ -80,8 +80,8 @@ if len(sys.argv) == 1:
 `/ping` - Check bot latency (my wifi is fine).
 
 **Bot**
-`/log` - See how hard bot man joner works.
-`/reportbug <message>` - Report a bug to the bot dev, or send him a funny meme.
+`/log` - See recent changes to SkywardBot.
+`/reportbug <message>` - Report a bug (or funny meme) to joner himself.
 
 Admins can use any command regardless of role exclusivity.""", color=0x429B97))
 
@@ -106,7 +106,8 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
     @bot.slash_command(name="reportbug", description="Report a bug to joner himself.")
     async def reportbug(ctx, message: str):
         await ctx.respond("Bug reported! Thanks for your help.")
-        await bot.get_channel(ids["dev"]).send(f"Bug reported by {ctx.author.mention}:\n{message}")
+        for dev in ids["devs"]:
+            await bot.get_user(dev).send(f"**Bug reported by {ctx.author}**\n{message}")
 
     @bot.slash_command(name="dm", description="Sends a message in dms to everyone with the pinged role.")
     async def dm(ctx, role: discord.Role, message: str):
