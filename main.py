@@ -54,6 +54,21 @@ intents.members = True
 
 bot = discord.Bot(intents=intents)
 
+class fileoperate:
+    def count(bruh):
+        # open funny.txt and write to second line
+        with open("funny.txt", "r+") as f:
+            num = int(f.readline())
+            if bruh:
+                f.seek(0)
+                f.write(str(num+1))
+            else:
+                return num
+    def zero():
+        with open("funny.txt", "w") as f:
+            f.write("0")
+c = fileoperate()
+
 if len(sys.argv) == 1:
 
     with open('ids.json') as f:
@@ -72,6 +87,10 @@ if len(sys.argv) == 1:
             channel = bot.get_channel(int(ctx.content.split()[1]))
             await channel.send(' '.join(ctx.content.split()[2:]))
             await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
+    
+    @bot.slash_command(name="count", description="Number of funni messages")
+    async def count(ctx):
+        await ctx.respond(f"Number of funni messages: {c.count(True)}")
 
     @bot.slash_command(name="help", description="Show list of commands.")
     async def help(ctx):
@@ -99,7 +118,11 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
 
     @bot.slash_command(name="ping", description="Sends the bot's latency.")
     async def ping(ctx):
-        await ctx.respond(f"Pong! Latency is {str(1000.0*bot.latency)[:5]}ms.")
+        await ctx.respond(embed=discord.Embed(
+            title="Pong!",
+            description=f"Pong! Latency is {str(1000.0*bot.latency)[:5]}ms.",
+            color=0x429B97
+        ))
 
     @bot.slash_command(name="flipout", description="flipout")
     async def flipout(ctx):
@@ -163,7 +186,12 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
                 description="<:dot:1031708752140832768> You can see caster availability [here!](https://docs.google.com/spreadsheets/d/1YfXo1ehAI8GDIiwG6dI09_In2VbxX7TjwBLA0Lgs430/edit?usp=sharing)"
             ))
         else:
-            await ctx.respond("This is a DMs-only command.")
+            c.count()
+            await ctx.respond(embed=discord.Embed(
+                title="SkywardBot - Error",
+                description="This is a DMs-only command.",
+                color=0xFF0000
+            )); return
 
     @bot.slash_command(name="report", description="Used to report match, sends the info to a designated channel.", options=[
         discord.Option(name="week", description="Week of the match", type=int, required=True),
@@ -207,7 +235,12 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
             name=ctx.author.display_name,
             icon_url=ctx.author.display_avatar
         ))
-        await ctx.respond("Report sent.")
+
+        await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Info",
+            description="Report sent.",
+            color=0x429B97
+        ))
     
     # make command called "forfeit" like /report
     @bot.slash_command(name="forfeit", description="Used to report a forfeit, sends the info to a designated channel.", options=[
@@ -222,6 +255,7 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
     async def forfeit(ctx, week, team_one_tag, team_two_tag, type):
 
         if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
+            c.count()
             await ctx.respond(embed=discord.Embed(
                 title="SkywardBot - Error",
                 description="This is a DMs-only command.",
@@ -258,7 +292,11 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
                 color=0xFF0000
             )); return
         
-        await ctx.respond("Report sent.")
+        await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Info",
+            description="Report sent.",
+            color=0x429B97
+        ))
 
     @bot.slash_command(name="requestcaster", description="Used to request a caster, said caster is then pinged in a designated channel with the info.", options=[
                         discord.Option(name="day", description="Day of the match", type=str),
@@ -267,6 +305,7 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
     async def requestcaster(ctx, day, time):
 
         if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
+            c.count()
             await ctx.respond(embed=discord.Embed(
                 title="SkywardBot - Error",
                 description="This is a DMs-only command.",
@@ -333,7 +372,11 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
             )
         )
 
-        await ctx.respond("Caster request sent.")
+        await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Info",
+            description="Caster request sent.",
+            color=0x429B97
+        ))
 
 else:
 
