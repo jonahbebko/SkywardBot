@@ -88,7 +88,8 @@ if len(sys.argv) == 1:
     
     @bot.slash_command(name="count", description="Number of funni messages")
     async def count(ctx):
-        await ctx.respond(f"Number of funni messages: {await countdms(True)}")
+        yuh = await countdms(True)
+        await ctx.respond(f"Number of funni messages: {yuh}")
 
     @bot.slash_command(name="help", description="Show list of commands.")
     async def help(ctx):
