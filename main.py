@@ -57,7 +57,7 @@ bot = discord.Bot(intents=intents)
 def countdms(bruh):
     # open funny.txt and write to second line
     with open("funny.txt", "r+") as f:
-        num = int(f.readline())
+        num = int(f.read())
         if bruh:
             f.seek(0)
             f.write(str(num+1))
