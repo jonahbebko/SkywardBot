@@ -113,7 +113,7 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
     async def log(ctx):
         await ctx.respond(embed=discord.Embed(title="SkywardBot - Log", description="""Last updated: 2022-11-20
 - Added `/log`, `/reportbug`, `/forfeit`, and `/help` commands.
-- `/report` and `/forfeit` now require Captain role.""", color=0x429B97))
+- Almost every message is now in a shiny-looking embed.""", color=0x429B97))
 
     @bot.slash_command(name="reportbug", description="Report a bug to joner himself.")
     async def reportbug(ctx, message: str):
@@ -122,7 +122,12 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
         # loop through all members in server with ROLES["dev"] role
         for member in server.members:
             if ROLES["dev"] in [role.id for role in member.roles]:
-                await member.send(f"**{ctx.author}** reported a bug:\n{message}")
+                await member.send(embed=discord.Embed(
+                    title="SkywardBot - Bug Report",
+                    description=f"**User:** {ctx.author} ({ctx.author.id})\n**Message:** {message}",
+                    color=0x429B97
+                    )
+                )
 
     @bot.slash_command(name="dm", description="Sends a message in dms to everyone with the pinged role.")
     async def dm(ctx, role: discord.Role, message: str):
@@ -130,10 +135,20 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
             await ctx.respond(f"Sending message to all members with role **\"{role}\"** (ID: {role.id})...")
             # send message to all members with role
             for member in role.members:
-                await member.send(f"**{ctx.author}** says:\n{message}")
+                await member.send(embed=discord.Embed(
+                    title="SkywardBot - Message",
+                    description=f"**{ctx.author}** says:\n{message}",
+                    color=0x429B97
+                    )
+                )
             await ctx.send("Sent.")
         else:
-            await ctx.respond("You must be an administrator to use this command.")
+            await ctx.respond(embed=discord.Embed(
+                title="SkywardBot - Error",
+                description="You must be an administrator to use this command.",
+                color=0xFF0000
+                )
+            )
             today = datetime.datetime.now().strftime("%m/%d/%y %H:%M:%S")
             with open("log.txt", "w+") as logf:
                 logf.write(f"[{today}] {ctx.author} attempted to use /dm on role \"{role}\" with message \"{message}\"")
@@ -162,10 +177,18 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
             await ctx.respond("This is a DMs-only command."); return
 
         try: int(week)
-        except: await ctx.respond(f"**Error** in parameter **week**, given '{week}'\nWeek must be a number."); return
+        except: await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Error",
+            description=f"**Error** in parameter **week**, given '{week}'\nWeek must be a number.",
+            color=0xFF0000
+        )); return
 
         try: int(score.split("-")[0])
-        except: await ctx.respond(f"**Error** in parameter **score**, given '{score}'\nScore must be in the format `a-b` where `a` and `b` are both numbers."); return
+        except: await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Error",
+            description=f"**Error** in parameter **score**, given '{score}'\nScore must be in the format `a-b` where `a` and `b` are both numbers.",
+            color=0xFF0000
+        )); return
         
         temp = [int(i) for i in score.split("-")]
 
@@ -199,7 +222,11 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
     async def forfeit(ctx, week, team_one_tag, team_two_tag, type):
 
         if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
-            await ctx.respond("This is a DMs-only command."); return
+            await ctx.respond(embed=discord.Embed(
+                title="SkywardBot - Error",
+                description="This is a DMs-only command.",
+                color=0xFF0000
+            )); return
 
         try: int(week)
         except: await ctx.respond(f"**Error** in parameter **week**, given '{week}'\nWeek must be a number."); return
@@ -225,7 +252,11 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
             ))
         
         else:
-            await ctx.respond(f"**Error** in parameter **type**, given '{type}'\nType must be either 'single' or 'double'."); return
+            await ctx.respond(embed=discord.Embed(
+                title="SkywardBot - Error",
+                description=f"**Error** in parameter **type**, given '{type}'\nType must be either 'single' or 'double'.",
+                color=0xFF0000
+            )); return
         
         await ctx.respond("Report sent.")
 
@@ -236,26 +267,43 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
     async def requestcaster(ctx, day, time):
 
         if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
-            await ctx.respond("This is a DMs-only command."); return
+            await ctx.respond(embed=discord.Embed(
+                title="SkywardBot - Error",
+                description="This is a DMs-only command.",
+                color=0xFF0000
+            )); return
 
         # check if day in MM/DD format using regex
         if not re.match(r"^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$", day):
-            await ctx.respond(f"**Error** in parameter **day**, given '{day}'\nDay must be a valid day, and in the format `MM/DD`")
-            return
+            await ctx.respond(embed=discord.Embed(
+                title="SkywardBot - Error",
+                description=f"**Error** in parameter **day**, given '{day}'\nDay must be a valid day, and in the format `MM/DD`",
+                color=0xFF0000
+            )); return
+        
         await ctx.respond(
             embed=discord.Embed(
                 description="**PLEASE CHECK CASTER SCHEDULES WITH /casterinfo BEFORE REQUESTING A CASTER**\n" + \
                 "Respond 'yes' to confirm you've checked the schedule."
             )
         )
+
         try:
             msg = await bot.wait_for("message", check=lambda m: m.author == ctx.author, timeout=20)
         except asyncio.TimeoutError:
-            await ctx.respond("Confirmation timed out after 20 seconds, please try again.")
-            return
+            await ctx.respond(embed=discord.Embed(
+                title="SkywardBot - Error",
+                description="Confirmation timed out after 20 seconds, please try again.",
+                color=0xFF0000
+            )); return
+        
         if msg.content.lower() != "yes":
-            await msg.respond("Confirmation failed, please try again.")
-            return
+            await ctx.respond(embed=discord.Embed(
+                title="SkywardBot - Error",
+                description="Confirmation failed, please try again.",
+                color=0xFF0000
+            )); return
+        
         await ctx.send(
             "Please enter the number corresponding to the caster you would like to request:\n",
             embed=discord.Embed(
@@ -267,11 +315,16 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
         try:
             msg = await bot.wait_for("message", check=lambda m: m.author == ctx.author, timeout=20)
         except asyncio.TimeoutError:
-            await ctx.respond("Request timed out after 20 seconds, please try again.")
-            return
+            await ctx.respond(embed=discord.Embed(
+                title="SkywardBot - Error",
+                description="Request timed out after 20 seconds, please try again.",
+                color=0xFF0000
+            )); return
+        
         if msg.content == "joner":
             await bot.get_channel(1025196891794853888).send(f"<@{ctx.author.id}>\nYou can't request joner, he's not a caster. But this test works, so that's good.\nparameters: `{day}`, `{time}`")
             return
+        
         await bot.get_channel(1025196891794853888).send(
             f"<@{[i for i in ids.values()][int(msg.content)-1]}>",
             embed=discord.Embed(
@@ -279,6 +332,7 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
                 description=f"\n{ctx.author} has requested a caster for **{day}** at **{time}**"
             )
         )
+
         await ctx.respond("Caster request sent.")
 
 else:
