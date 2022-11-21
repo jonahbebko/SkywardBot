@@ -65,14 +65,19 @@ if len(sys.argv) == 1:
         await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Skyward Series"))
     
     @bot.event
-    async def on_message(message):
-        if message.author == bot.user:
+    async def on_message(ctx):
+        if ctx.author == bot.user:
             return
-        if message.content.startswith('!!!send'):
-            if message.author.id == ids['dev']:
-                channel = bot.get_channel(int(message.content.split()[1]))
-                await channel.send(' '.join(message.content.split()[2:]))
-        await bot.process_commands(message)
+        if ctx.content.startswith('!!!send'):
+            server = await bot.fetch_guild(991005374314328124)
+            member = await server.fetch_member(ctx.author.id)
+            if ROLES['dev'] in [role.id for role in member.roles]:
+                channel = bot.get_channel(int(ctx.content.split()[1]))
+                await channel.send(' '.join(ctx.content.split()[2:]))
+                await ctx.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
+            else:
+                await ctx.send("how tf did you find this command")
+        await bot.process_commands(ctx)
 
     @bot.slash_command(name="help", description="Show list of commands.")
     async def help(ctx):
