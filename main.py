@@ -54,20 +54,18 @@ intents.members = True
 
 bot = discord.Bot(intents=intents)
 
-class fileoperate:
-    def count(bruh):
-        # open funny.txt and write to second line
-        with open("funny.txt", "r+") as f:
-            num = int(f.readline())
-            if bruh:
-                f.seek(0)
-                f.write(str(num+1))
-            else:
-                return num
-    def zero():
-        with open("funny.txt", "w") as f:
-            f.write("0")
-c = fileoperate()
+def count(bruh):
+    # open funny.txt and write to second line
+    with open("funny.txt", "r+") as f:
+        num = int(f.readline())
+        if bruh:
+            f.seek(0)
+            f.write(str(num+1))
+        else:
+            return num
+def zero():
+    with open("funny.txt", "w") as f:
+        f.write("0")
 
 if len(sys.argv) == 1:
 
@@ -186,7 +184,7 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
                 description="<:dot:1031708752140832768> You can see caster availability [here!](https://docs.google.com/spreadsheets/d/1YfXo1ehAI8GDIiwG6dI09_In2VbxX7TjwBLA0Lgs430/edit?usp=sharing)"
             ))
         else:
-            c.count()
+            count()
             await ctx.respond(embed=discord.Embed(
                 title="SkywardBot - Error",
                 description="This is a DMs-only command.",
@@ -255,7 +253,7 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
     async def forfeit(ctx, week, team_one_tag, team_two_tag, type):
 
         if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
-            c.count()
+            count()
             await ctx.respond(embed=discord.Embed(
                 title="SkywardBot - Error",
                 description="This is a DMs-only command.",
@@ -305,7 +303,7 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
     async def requestcaster(ctx, day, time):
 
         if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
-            c.count()
+            count()
             await ctx.respond(embed=discord.Embed(
                 title="SkywardBot - Error",
                 description="This is a DMs-only command.",
