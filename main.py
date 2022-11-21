@@ -54,7 +54,7 @@ intents.members = True
 
 bot = discord.Bot(intents=intents)
 
-def count(bruh):
+def countdms(bruh):
     # open funny.txt and write to second line
     with open("funny.txt", "r+") as f:
         num = int(f.readline())
@@ -88,7 +88,7 @@ if len(sys.argv) == 1:
     
     @bot.slash_command(name="count", description="Number of funni messages")
     async def count(ctx):
-        await ctx.respond(f"Number of funni messages: {await count(True)}")
+        await ctx.respond(f"Number of funni messages: {await countdms(True)}")
 
     @bot.slash_command(name="help", description="Show list of commands.")
     async def help(ctx):
@@ -184,7 +184,7 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
                 description="<:dot:1031708752140832768> You can see caster availability [here!](https://docs.google.com/spreadsheets/d/1YfXo1ehAI8GDIiwG6dI09_In2VbxX7TjwBLA0Lgs430/edit?usp=sharing)"
             ))
         else:
-            count()
+            countdms()
             await ctx.respond(embed=discord.Embed(
                 title="SkywardBot - Error",
                 description="This is a DMs-only command.",
@@ -253,7 +253,7 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
     async def forfeit(ctx, week, team_one_tag, team_two_tag, type):
 
         if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
-            count()
+            countdms()
             await ctx.respond(embed=discord.Embed(
                 title="SkywardBot - Error",
                 description="This is a DMs-only command.",
@@ -303,7 +303,7 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
     async def requestcaster(ctx, day, time):
 
         if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
-            count()
+            countdms()
             await ctx.respond(embed=discord.Embed(
                 title="SkywardBot - Error",
                 description="This is a DMs-only command.",
