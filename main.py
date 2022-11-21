@@ -58,7 +58,7 @@ def countdms(bruh):
     # open funny.txt and write to second line
     with open("funny.txt", "r+") as f:
         num = int(f.read())
-        if bruh:
+        if not bruh:
             f.seek(0)
             f.write(str(num+1))
         else:
