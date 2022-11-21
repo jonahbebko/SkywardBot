@@ -119,8 +119,10 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
     async def reportbug(ctx, message: str):
         await ctx.respond("Bug reported! Thanks for your help.")
         server = bot.get_guild(991005374314328124)
-        for member in server.roles[ROLES["dev"]].members:
-            await member.send(f"Bug reported by {ctx.author} in {ctx.channel}:\n{message}")
+        # loop through all members in server with ROLES["dev"] role
+        for member in server.members:
+            if ROLES["dev"] in [role.id for role in member.roles]:
+                await member.send(f"**{ctx.author}** reported a bug:\n{message}")
 
     @bot.slash_command(name="dm", description="Sends a message in dms to everyone with the pinged role.")
     async def dm(ctx, role: discord.Role, message: str):
