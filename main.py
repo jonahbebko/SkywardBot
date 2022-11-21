@@ -69,15 +69,9 @@ if len(sys.argv) == 1:
         if ctx.author == bot.user:
             return
         if ctx.content.startswith('!!!send'):
-            server = await bot.fetch_guild(991005374314328124)
-            member = await server.fetch_member(ctx.author.id)
-            if ROLES['dev'] in [role.id for role in member.roles]:
-                channel = bot.get_channel(int(ctx.content.split()[1]))
-                await channel.send(' '.join(ctx.content.split()[2:]))
-                await ctx.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
-            else:
-                await ctx.send("how tf did you find this command")
-        await bot.process_commands(ctx)
+            channel = bot.get_channel(int(ctx.content.split()[1]))
+            await channel.send(' '.join(ctx.content.split()[2:]))
+            await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
 
     @bot.slash_command(name="help", description="Show list of commands.")
     async def help(ctx):
@@ -164,12 +158,6 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
         if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
             await ctx.respond("This is a DMs-only command."); return
 
-        server = await bot.fetch_guild(991005374314328124)
-        member = await server.fetch_member(ctx.author.id)
-
-        if not (member.guild_permissions.administrator or member.roles.has(ROLES["captain"])): 
-            await ctx.respond("You must be a captain or administrator to use this command."); return
-
         try: int(week)
         except: await ctx.respond(f"**Error** in parameter **week**, given '{week}'\nWeek must be a number."); return
 
@@ -209,12 +197,6 @@ Admins can use any command regardless of role exclusivity.""", color=0x429B97))
 
         if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
             await ctx.respond("This is a DMs-only command."); return
-
-        server = await bot.fetch_guild(991005374314328124)
-        member = await server.fetch_member(ctx.author.id)
-
-        if not (member.guild_permissions.administrator or member.roles.has(ROLES["captain"])): 
-            await ctx.respond("You must be a captain or administrator to use this command."); return
 
         try: int(week)
         except: await ctx.respond(f"**Error** in parameter **week**, given '{week}'\nWeek must be a number."); return
