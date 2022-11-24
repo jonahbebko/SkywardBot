@@ -85,6 +85,10 @@ if len(sys.argv) == 1:
             channel = bot.get_channel(int(ctx.content.split()[1]))
             await channel.send(' '.join(ctx.content.split()[2:]))
             await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
+        if ctx.content.startswith('!!!dm'):
+            user = bot.get_user(int(ctx.content.split()[1]))
+            await user.send(' '.join(ctx.content.split()[2:]))
+            await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
     
     @bot.slash_command(name="count", description="Number of funni messages")
     async def count(ctx):
