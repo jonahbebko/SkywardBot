@@ -89,9 +89,10 @@ async def on_message(ctx):
         await channel.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
     if ctx.content.startswith('!!!dm'):
-        user = bot.get_user(int(ctx.content.split()[1]))
         if ctx.content.split()[2] in USERALISES:
             user = bot.get_user(USERALISES[ctx.content.split()[2]])
+        else:
+            user = bot.get_user(int(ctx.content.split()[1]))
         await user.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
 
