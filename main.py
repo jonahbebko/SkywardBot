@@ -48,6 +48,11 @@ ROLES = {
     "admin": 991633204874326136,
     "dev": 1044024355052589146
 }
+USERALISES = {
+    "andrew": 608263238161006592,
+    "flip": 348915482356744197,
+    "ben": 902657099253825646
+}
 
 intents = discord.Intents.default()
 intents.members = True
@@ -87,6 +92,8 @@ if len(sys.argv) == 1:
             await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
         if ctx.content.startswith('!!!dm'):
             user = bot.get_user(int(ctx.content.split()[1]))
+            if ctx.content.split()[2] in USERALISES:
+                user = bot.get_user(USERALISES[ctx.content.split()[2]])
             await user.send(' '.join(ctx.content.split()[2:]))
             await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
     
