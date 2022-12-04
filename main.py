@@ -113,7 +113,7 @@ async def banlist(ctx):
             await ctx.respond(embed=discord.Embed(
                 title="Banned Users/Groups",
                 color=0xFF0000,
-                description=[i for i in banl]
+                description=banl
             ))
     else:
         await ctx.respond(embed=discord.Embed(
