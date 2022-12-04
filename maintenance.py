@@ -14,6 +14,17 @@ async def on_ready():
 async def ping(ctx):
     await ctx.respond(f"Pong! Latency is {str(1000.0*bot.latency)[:5]}ms.")
 
+@bot.slash_command(name="banlist", description="List of banned users (admin only)")
+async def banlist(ctx):
+    await ctx.respond("SkywardBot is currently under maintenance, please try again later.")
+
+@bot.slash_command(name="ban", description="Add user to ban list (admin only)", options=[
+    discord.Option(name="msg", description="ID/group to ban, or a message", required=True, type=3),
+    discord.Option(name="reason", description="Reason for ban", required=False, type=3)
+])
+async def ban(ctx, msg, reason:None):
+    await ctx.respond("SkywardBot is currently under maintenance, please try again later.")
+
 @bot.slash_command(name="flipout", description="flipout")
 async def flipout(ctx):
     await ctx.respond("flipout :kissing_heart:")

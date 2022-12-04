@@ -5,6 +5,12 @@ PINGHELPERS = False
 
 LIST OF COMMANDS:
 
+/banlist
+list of banned users (admin only)
+
+/ban <id/user/group/message> [reason]
+add user to ban list (admin only)
+
 /dm <role> <message> (admin only)
 sends a message in dms to everyone with the pinged role
 
@@ -68,6 +74,7 @@ def countdms(bruh):
             f.write(str(num+1))
         else:
             return num
+
 def zero():
     with open("funny.txt", "w") as f:
         f.write("0")
@@ -96,6 +103,43 @@ async def on_message(ctx):
         await user.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
 
+@bot.slash_command(name="banlist", description="List of banned users (admin only)")
+async def banlist(ctx):
+    if ctx.author.guild_permissions.administrator:
+        with open("bans.txt", "r") as f:
+            await ctx.respond(embed=discord.Embed(
+                title="Banned Users/Groups",
+                color=0xFF0000,
+                description='```f.read()```'
+            ))
+    else:
+        await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Error",
+            description="You must be an administrator to use this command.",
+            color=0xFF0000
+            )
+        )
+
+@bot.slash_command(name="ban", description="Add user to ban list (admin only)", options=[
+    discord.Option(name="msg", description="ID/group to ban, or a message", required=True, type=3),
+    discord.Option(name="reason", description="Reason for ban", required=False, type=3)
+])
+async def ban(ctx, msg, reason:None):
+    if ctx.author.guild_permissions.administrator:
+        with open("bans.txt", "a") as f:
+            if reason:
+                f.write(f"{msg} - {reason}")
+            else:
+                f.write(f"{msg}")
+        await ctx.respond(f"Banned **{msg}** for **{reason}**")
+    else:
+        await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Error",
+            description="You must be an administrator to use this command.",
+            color=0xFF0000
+            )
+        )
+
 @bot.slash_command(name="count", description="Number of funni messages")
 async def count(ctx):
     yuh = countdms(True)
@@ -105,6 +149,8 @@ async def count(ctx):
 async def help(ctx):
     await ctx.respond(embed=discord.Embed(title="SkywardBot - Help", description="""**Admin-Only**
 `/dm <role> <message>` - Sends a message in dms to everyone with the pinged role.
+`/banlist` - List of banned users/groups.
+`/ban <id/user/group> [reason]` - Add user/group to ban list.
 
 **Casters** (DMs only)
 `/casterinfo` - Get a list of casters and their availability.
