@@ -121,8 +121,8 @@ async def banlist(ctx):
         )
 
 @bot.slash_command(name="ban", description="Add user to ban list (admin only)", options=[
-    discord.Option(name="msg", description="ID/group to ban, or a message", required=True, type=3),
-    discord.Option(name="reason", description="Reason for ban", required=False, type=3)
+    discord.Option(name="msg", description="ID/group to ban, or a message", required=True, type=str),
+    discord.Option(name="reason", description="Reason for ban", required=False, type=str)
 ])
 async def ban(ctx, msg, reason:None):
     if ctx.author.guild_permissions.administrator:
