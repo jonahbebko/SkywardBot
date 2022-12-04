@@ -107,10 +107,13 @@ async def on_message(ctx):
 async def banlist(ctx):
     if ctx.author.guild_permissions.administrator:
         with open("bans.txt", "r") as f:
+            banl = []
+            for line in f.read():
+                banl.append(line)
             await ctx.respond(embed=discord.Embed(
                 title="Banned Users/Groups",
                 color=0xFF0000,
-                description=[f'```{i}```' for i in f.read().splitlines()]
+                description=[f'`{i}`' for i in banl]
             ))
     else:
         await ctx.respond(embed=discord.Embed(
