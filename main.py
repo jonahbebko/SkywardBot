@@ -106,11 +106,12 @@ async def on_message(ctx):
 @bot.slash_command(name="banlist", description="List of banned users (admin only)")
 async def banlist(ctx):
     if ctx.author.guild_permissions.administrator:
-        with open("bans.txt", "r") as f:
+        with open("bans.txt", "r").read() as f:
+            if not f: f="No banned users."
             await ctx.respond(embed=discord.Embed(
                 title="Banned Users/Groups",
                 color=0xFF0000,
-                description=(f.read() if f.read() else "No banned users/groups")
+                description=f
             ))
     else:
         await ctx.respond(embed=discord.Embed(
