@@ -5,10 +5,10 @@ PINGHELPERS = False
 
 LIST OF COMMANDS:
 
-/banlist
+[inactive] /banlist
 list of banned users (admin only)
 
-/ban <id/user/group/message> [reason]
+[inactive] /ban <id/user/group/message> [reason]
 add user to ban list (admin only)
 
 /dm <role> <message> (admin only)
@@ -103,6 +103,7 @@ async def on_message(ctx):
         await user.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
 
+"""
 @bot.slash_command(name="banlist", description="List of banned users (admin only)")
 async def banlist(ctx):
     if ctx.author.guild_permissions.administrator:
@@ -139,6 +140,7 @@ async def ban(ctx, msg, reason:None):
             color=0xFF0000
             )
         )
+"""
 
 @bot.slash_command(name="count", description="Number of funni messages")
 async def count(ctx):
@@ -149,8 +151,6 @@ async def count(ctx):
 async def help(ctx):
     await ctx.respond(embed=discord.Embed(title="SkywardBot - Help", description="""**Admin-Only**
 `/dm <role> <message>` - Sends a message in dms to everyone with the pinged role.
-`/banlist` - List of banned users/groups.
-`/ban <id/user/group> [reason]` - Add user/group to ban list.
 
 **Casters** (DMs only)
 `/casterinfo` - Get a list of casters and their availability.
@@ -249,27 +249,46 @@ async def casterinfo(ctx):
         )); return
 
 @bot.slash_command(name="report", description="Used to report match, sends the info to a designated channel.", options=[
+    discord.Option(name="league", description="League played - must be premier, all-star, challenger, or prospect", type=str, required=True),
+    discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", type=str, required=True),
     discord.Option(name="week", description="Week of the match", type=int, required=True),
     discord.Option(name="team_one_tag", description="Tag of the first team", type=str, required=True),
     discord.Option(name="score", description="Score of the match", type=str, required=True),
     discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True)
 ])
-async def report(ctx, week, team_one_tag, score, team_two_tag):
+async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag):
 
     if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
         await ctx.respond("This is a DMs-only command."); return
+    
+    if league not in ["premier", "all-star", "challenger", "prospect"]:
+        await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Error",
+            description=f"**Error** in parameter `league`, given '{league}'\n" + \
+                "League must be one of the following: `premier`, `all-star`, `challenger`, `prospect`",
+            color=0xFF0000
+        )); return
+    league = capitalize(league)
+
+    if gamemode not in ["2v2", "3v3"]:
+        await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Error",
+            description=f"**Error** in parameter `gamemode`, given '{gamemode}'\n" + \
+                "Gamemode must be one of the following: `2v2`, `3v3`",
+            color=0xFF0000
+        )); return
 
     try: int(week)
     except: await ctx.respond(embed=discord.Embed(
         title="SkywardBot - Error",
-        description=f"**Error** in parameter **week**, given '{week}'\nWeek must be a number.",
+        description=f"**Error** in parameter `week`, given '{week}'\nWeek must be a number.",
         color=0xFF0000
     )); return
 
     try: int(score.split("-")[0])
     except: await ctx.respond(embed=discord.Embed(
         title="SkywardBot - Error",
-        description=f"**Error** in parameter **score**, given '{score}'\nScore must be in the format `a-b` where `a` and `b` are both numbers.",
+        description=f"**Error** in parameter `score`, given '{score}'\nScore must be in the format `a-b` where `a` and `b` are both positive integers.",
         color=0xFF0000
     )); return
     
@@ -285,7 +304,7 @@ async def report(ctx, week, team_one_tag, score, team_two_tag):
     await bot.get_channel(1025198171435049032).send((f"<@&{ROLES['helpers']}>" if PINGHELPERS else ""), embed=discord.Embed(
         color=0x429B97,
         title=f"{team_one_tag} vs. {team_two_tag} - Reported Match",
-        description=f"**Week {week}**\n{who_won} with a score of **{score}**"
+        description=f"**{gamemode} {league} League - Week {week}**\n{who_won} with a score of **{score}**"
     ).set_author(
         name=ctx.author.display_name,
         icon_url=ctx.author.display_avatar
@@ -297,8 +316,9 @@ async def report(ctx, week, team_one_tag, score, team_two_tag):
         color=0x429B97
     ))
 
-# make command called "forfeit" like /report
 @bot.slash_command(name="forfeit", description="Used to report a forfeit, sends the info to a designated channel.", options=[
+    discord.Option(name="league", description="League played - must be premier, all-star, challenger, or prospect", type=str, required=True),
+    discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", type=str, required=True),
     discord.Option(name="week", description="Week of the match", type=int, required=True),
     discord.Option(name="team_one_tag", description="Tag of the first team (if single FF, this is the FFing team)", type=str, required=True),
     discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True),
@@ -307,7 +327,7 @@ async def report(ctx, week, team_one_tag, score, team_two_tag):
         discord.Option(name="double", description="Double forfeit.", type=str, required=True)
     ])
 ])
-async def forfeit(ctx, week, team_one_tag, team_two_tag, type):
+async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, type):
 
     if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
         countdms()
@@ -317,8 +337,25 @@ async def forfeit(ctx, week, team_one_tag, team_two_tag, type):
             color=0xFF0000
         )); return
 
+    if league not in ["premier", "all-star", "challenger", "prospect"]:
+        await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Error",
+            description=f"**Error** in parameter `league`, given '{league}'\n" + \
+                "League must be one of the following: `premier`, `all-star`, `challenger`, `prospect`",
+            color=0xFF0000
+        )); return
+    league = capitalize(league)
+
+    if gamemode not in ["2v2", "3v3"]:
+        await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Error",
+            description=f"**Error** in parameter `gamemode`, given '{gamemode}'\n" + \
+                "Gamemode must be one of the following: `2v2`, `3v3`",
+            color=0xFF0000
+        )); return
+
     try: int(week)
-    except: await ctx.respond(f"**Error** in parameter **week**, given '{week}'\nWeek must be a number."); return
+    except: await ctx.respond(f"**Error** in parameter `week`, given '{week}'\nWeek must be a number."); return
 
     if type == "single":
         await bot.get_channel(1025198171435049032).send((f"<@&{ROLES['helpers']}>" if PINGHELPERS else ""), embed=discord.Embed(
@@ -334,7 +371,7 @@ async def forfeit(ctx, week, team_one_tag, team_two_tag, type):
         await bot.get_channel(1025198171435049032).send((f"<@&{ROLES['helpers']}>" if PINGHELPERS else ""), embed=discord.Embed(
             color=0xFF0000,
             title=f"{team_one_tag} vs. {team_two_tag} - Reported Double Forfeit",
-            description=f"**Week {week}**\n**{team_one_tag}** and **{team_two_tag}** double FF'd"
+            description=f"**{gamemode} {league} League - Week {week}**\n**{team_one_tag}** and **{team_two_tag}** double FF'd"
         ).set_author(
             name=ctx.author.display_name,
             icon_url=ctx.author.display_avatar
@@ -343,7 +380,7 @@ async def forfeit(ctx, week, team_one_tag, team_two_tag, type):
     else:
         await ctx.respond(embed=discord.Embed(
             title="SkywardBot - Error",
-            description=f"**Error** in parameter **type**, given '{type}'\nType must be either 'single' or 'double'.",
+            description=f"**Error** in parameter `type`, given '{type}'\nType must be either 'single' or 'double'.",
             color=0xFF0000
         )); return
     
@@ -371,7 +408,7 @@ async def requestcaster(ctx, day, time):
     if not re.match(r"^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$", day):
         await ctx.respond(embed=discord.Embed(
             title="SkywardBot - Error",
-            description=f"**Error** in parameter **day**, given '{day}'\nDay must be a valid day, and in the format `MM/DD`",
+            description=f"**Error** in parameter `day`, given '{day}'\nDay must be a valid day, and in the format `MM/DD`",
             color=0xFF0000
         )); return
     
