@@ -189,9 +189,9 @@ async def benjamin(ctx):
 
 @bot.slash_command(name="log", description="See the recent updates for SkywardBot.")
 async def log(ctx):
-    await ctx.respond(embed=discord.Embed(title="SkywardBot - Log", description="""Last updated: 2022-11-20
-- Added `/log`, `/reportbug`, `/forfeit`, and `/help` commands.
-- Almost every message is now in a shiny-looking embed.""", color=0x429B97))
+    await ctx.respond(embed=discord.Embed(title="SkywardBot - Log", description="""Last updated: 2023-01-09
+- Added options for league and gamemode, having expanded to 2v2
+- Removed unnecessary stuff we have other methods for""", color=0x429B97))
 
 @bot.slash_command(name="reportbug", description="Report a bug to joner himself.")
 async def reportbug(ctx, message: str):
