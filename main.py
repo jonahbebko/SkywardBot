@@ -190,9 +190,10 @@ async def benjamin(ctx):
 
 @bot.slash_command(name="log", description="See the recent updates for SkywardBot.")
 async def log(ctx):
-    await ctx.respond(embed=discord.Embed(title="SkywardBot - Log", description="""Last updated: 2023-01-09
+    await ctx.respond(embed=discord.Embed(title="SkywardBot - Log", description="""Last updated: 2023-01-12
 - Added options for league and gamemode, having expanded to 2v2
-- Removed unnecessary stuff we have other methods for""", color=0x429B97))
+- Removed unnecessary stuff we have other methods for
+- Bug reports and suggestions are now optionally anonymous""", color=0x429B97))
 
 @bot.slash_command(name="bug", description="Report a bug to joner himself.")
 async def bug(ctx, anon: bool, message: str):
