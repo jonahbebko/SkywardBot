@@ -52,7 +52,7 @@ ROLES = {
     "helper": 1022316227131080797,
     "moderator": 1031270343085654107,
     "admin": 991633204874326136,
-    "dev": 1044024355052589146
+    "dev": 1062201184095580231
 }
 USERALISES = {
     "andrew": 608263238161006592,
@@ -167,7 +167,8 @@ async def help(ctx):
 
 **Bot**
 `/log` - See recent changes to SkywardBot.
-`/reportbug <message>` - Report a bug (or funny meme) to joner himself.
+`/bug <anonymous> <message>` - Report a bug (or funny meme) to joner himself.
+`/suggest <anonymous> <message>` - Suggest a few feature or improvement.
 
 Admins can use any command regardless of role exclusivity.""", color=0x429B97))
 
@@ -194,9 +195,13 @@ async def log(ctx):
 - Removed unnecessary stuff we have other methods for""", color=0x429B97))
 
 @bot.slash_command(name="bug", description="Report a bug to joner himself.")
-async def bug(ctx, message: str):
+async def bug(ctx, anon: bool, message: str):
     await ctx.respond("Bug reported! Thanks for your help.")
     server = bot.get_guild(991005374314328124)
+    if not anon:
+	desc = f"**User:** {ctx.author} ({ctx.author.id})\n**Message:** {message}"
+    else:
+	desc = f"**Message:** {message}"
     # loop through all members in server with ROLES["dev"] role
     for member in server.members:
         if ROLES["dev"] in [role.id for role in member.roles]:
