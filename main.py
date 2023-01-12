@@ -199,21 +199,34 @@ async def bug(ctx, anon: bool, message: str):
     await ctx.respond("Bug reported! Thanks for your help.")
     server = bot.get_guild(991005374314328124)
     if not anon:
-	desc = f"**User:** {ctx.author} ({ctx.author.id})\n**Message:** {message}"
+        desc = f"**User:** {ctx.author} ({ctx.author.id})\n**Message:** {message}"
     else:
-	desc = f"**Message:** {message}"
-    # loop through all members in server with ROLES["dev"] role
+        desc = f"**Message:** {message}"
     for member in server.members:
         if ROLES["dev"] in [role.id for role in member.roles]:
             await member.send(embed=discord.Embed(
                 title="SkywardBot - Bug Report",
-                description=f"**User:** {ctx.author} ({ctx.author.id})\n**Message:** {message}",
-                color=0x429B97
+                description=desc,
+                color=0xFF0000
                 )
             )
 
-#@bot.slash_command(name="suggest", description="Suggest a new feature or improvement.")
-#async def syggest(ctx, message: str):
+@bot.slash_command(name="suggest", description="Suggest a new feature or improvement.")
+async def suggest(ctx, anon: bool, message: str):
+    await ctx.respond("Suggestion sent! Thanks for your help.")
+    server = bot.get_guild(991005374314328124)
+    if not anon:
+        desc = f"**User:** {ctx.author} ({ctx.author.id})\n**Message:** {message}"
+    else:
+        desc = f"**Message:** {message}"
+    for member in server.members:
+        if ROLES["dev"] in [role.id for role in member.roles]:
+            await member.send(embed=discord.Embed(
+                title="SkywardBot - Suggestion",
+                description=desc,
+                color=0x429B97
+                )
+            )
 
 @bot.slash_command(name="dm", description="Sends a message in dms to everyone with the pinged role.")
 async def dm(ctx, role: discord.Role, message: str):
