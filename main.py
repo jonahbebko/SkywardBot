@@ -1,48 +1,17 @@
-# ping helpers?
-PINGHELPERS = False
-
-"""
-
-LIST OF COMMANDS:
-
-[inactive] /banlist
-list of banned users (admin only)
-
-[inactive] /ban <id/user/group/message> [reason]
-add user to ban list (admin only)
-
-/dm <role> <message> (admin only)
-sends a message in dms to everyone with the pinged role
-
-/casterinfo (dms only)
-sends a list of caster availability set by /setcasterinfo
-
-/report <week> <ID> <score-score> <ID> (dms only)
-used to report match, sends the info to a designated channel or gsheet
-
-/forfeit <week> <ID> <ID> <type> (dms only)
-used to report forfeit, sends the info to a designated channel or gsheet
-
-/requestcaster <day> <time> (dms only)
-used to request a caster, said caster is then pinged in a designated channel with the info
-
-/flipout
-responds with kissy face emoji
-
-/benjamin
-responds with benjamin
-
-!!!send <channel ID> <message>
-secret send command
-
-"""
-
 import json
 import discord
 import sys
 import datetime
 import re
 import asyncio
+
+LOG="""Last updated: January 14, 2023
+- `/report` and `/forfeit` now have guided options, instead of the user figuring out usage through trial and error.
+- A few more embeds with a few more colors.
+- `/suggest` and `/bug` anonymity is fixed.
+- Added `/source` command.
+- Removed `/funny` command for counting how many times SkywardBot has said "This is a DMs-only command" - it didn't work.
+"""
 
 ROLES = {
     "captain": 991634383482138714,
@@ -64,20 +33,6 @@ intents = discord.Intents.default()
 intents.members = True
 
 bot = discord.Bot(intents=intents)
-
-def countdms(bruh):
-    # open funny.txt and write to second line
-    with open("funny.txt", "r+") as f:
-        num = int(f.read())
-        if not bruh:
-            f.seek(0)
-            f.write(str(num+1))
-        else:
-            return num
-
-def zero():
-    with open("funny.txt", "w") as f:
-        f.write("0")
 
 with open('ids.json') as f:
     ids = json.load(f)
@@ -142,11 +97,6 @@ async def ban(ctx, msg, reason:None):
         )
 """
 
-@bot.slash_command(name="count", description="Number of funni messages")
-async def count(ctx):
-    yuh = countdms(True)
-    await ctx.respond(f"Number of funni messages: {yuh}")
-
 @bot.slash_command(name="help", description="Show list of commands.")
 async def help(ctx):
     await ctx.respond(embed=discord.Embed(title="SkywardBot - Help", description="""**Admin-Only**
@@ -164,6 +114,7 @@ async def help(ctx):
 `/flipout` - flipout
 `/benjamin` - benjamin
 `/ping` - Check bot latency (my wifi is fine).
+`/source` - Get a link to the GitHub source code for SkywardBot.
 
 **Bot**
 `/log` - See recent changes to SkywardBot.
@@ -188,15 +139,19 @@ async def flipout(ctx):
 async def benjamin(ctx):
     await ctx.respond("benjamin :flushed:")
 
+@bot.slash_command(name="source", description="Get a link to the GitHub source code for SkywardBot.")
+async def source(ctx):
+    await ctx.respond(embed=discord.Embed(title="SkywardBot - Source Code", description="You can view the source code of SkywardBot here:\nhttp://github.com/jonahbebko/SkywardBot"))
+
 @bot.slash_command(name="log", description="See the recent updates for SkywardBot.")
 async def log(ctx):
-    await ctx.respond(embed=discord.Embed(title="SkywardBot - Log", description="""Last updated: 2023-01-12
-- Added options for league and gamemode, having expanded to 2v2
-- Removed unnecessary stuff we have other methods for
-- Bug reports and suggestions are now optionally anonymous""", color=0x429B97))
+    await ctx.respond(embed=discord.Embed(title="SkywardBot - Log", description=LOG, color=0x429B97))
 
-@bot.slash_command(name="bug", description="Report a bug to joner himself.")
-async def bug(ctx, anon: bool, message: str):
+@bot.slash_command(name="bug", description="Report a bug to joner himself.", options=[
+    discord.Option(name="anon", description="Whether to anonymously report your bug. (username and UID will be hidden)", type=bool, required=True),
+    discord.Option(name="message", description="The bug you encountered.", type=str, required=True)
+])
+async def bug(ctx, anon, message):
     await ctx.respond("Bug reported! Thanks for your help.")
     server = bot.get_guild(991005374314328124)
     if not anon:
@@ -212,8 +167,11 @@ async def bug(ctx, anon: bool, message: str):
                 )
             )
 
-@bot.slash_command(name="suggest", description="Suggest a new feature or improvement.")
-async def suggest(ctx, anon: bool, message: str):
+@bot.slash_command(name="suggest", description="Suggest a new feature or improvement.", options=[
+    discord.Option(name="anon", description="Whether to anonymously send your suggestion. (username and UID will be hidden)", type=bool, required=True),
+    discord.Option(name="message", description="The suggestion you want to provide.", type=str, required=True)
+])
+async def suggest(ctx, anon, message):
     await ctx.respond("Suggestion sent! Thanks for your help.")
     server = bot.get_guild(991005374314328124)
     if not anon:
@@ -271,8 +229,16 @@ async def casterinfo(ctx):
         )); return
 
 @bot.slash_command(name="report", description="Used to report match, sends the info to a designated channel.", options=[
-    discord.Option(name="league", description="League played - must be premier, all-star, challenger, or prospect", type=str, required=True),
-    discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", type=str, required=True),
+    discord.Option(name="league", description="League played.", required=True, options=[
+        discord.Option(name="premier", description="Premier league."),
+        discord.Option(name="all-star", description="All-star league."),
+        discord.Option(name="challenger", description="Challenger league."),
+        discord.Option(name="prospect", description="Prospect league.")
+    ]),
+    discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", required=True, options=[
+        discord.Option(name="2v2", description="2v2 gamemode."),
+        discord.Option(name="3v3", description="3v3 gamemode.")
+    ]),
     discord.Option(name="week", description="Week of the match", type=int, required=True),
     discord.Option(name="team_one_tag", description="Tag of the first team", type=str, required=True),
     discord.Option(name="score", description="Score of the match", type=str, required=True),
@@ -323,7 +289,7 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag)
     else:
         who_won = f"**{team_one_tag}** and **{team_two_tag}** tied"
 
-    await bot.get_channel(1025198171435049032).send((f"<@&{ROLES['helpers']}>" if PINGHELPERS else ""), embed=discord.Embed(
+    await bot.get_channel(1025198171435049032).send(embed=discord.Embed(
         color=0x429B97,
         title=f"{team_one_tag} vs. {team_two_tag} - Reported Match",
         description=f"**{gamemode} {league} League - Week {week}**\n{who_won} with a score of **{score}**"
@@ -339,14 +305,22 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag)
     ))
 
 @bot.slash_command(name="forfeit", description="Used to report a forfeit, sends the info to a designated channel.", options=[
-    discord.Option(name="league", description="League played - must be premier, all-star, challenger, or prospect", type=str, required=True),
-    discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", type=str, required=True),
+    discord.Option(name="league", description="League played.", required=True, options=[
+        discord.Option(name="premier", description="Premier league."),
+        discord.Option(name="all-star", description="All-star league."),
+        discord.Option(name="challenger", description="Challenger league."),
+        discord.Option(name="prospect", description="Prospect league.")
+    ]),
+    discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", required=True, options=[
+        discord.Option(name="2v2", description="2v2 gamemode."),
+        discord.Option(name="3v3", description="3v3 gamemode.")
+    ]),
     discord.Option(name="week", description="Week of the match", type=int, required=True),
     discord.Option(name="team_one_tag", description="Tag of the first team (if single FF, this is the FFing team)", type=str, required=True),
     discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True),
-    discord.Option(name="type", description="Type of forfeit - must be 'single' or 'double'", type=str, required=True, options=[
-        discord.Option(name="single", description="Single forfeit.", type=str, required=True),
-        discord.Option(name="double", description="Double forfeit.", type=str, required=True)
+    discord.Option(name="type", description="Type of forfeit - must be 'single' or 'double'", required=True, options=[
+        discord.Option(name="single", description="Single forfeit."),
+        discord.Option(name="double", description="Double forfeit.")
     ])
 ])
 async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, type):
@@ -380,7 +354,7 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, type)
     except: await ctx.respond(f"**Error** in parameter `week`, given '{week}'\nWeek must be a number."); return
 
     if type == "single":
-        await bot.get_channel(1025198171435049032).send((f"<@&{ROLES['helpers']}>" if PINGHELPERS else ""), embed=discord.Embed(
+        await bot.get_channel(1025198171435049032).send(embed=discord.Embed(
             color=0xFF0000,
             title=f"{team_one_tag} vs. {team_two_tag} - Reported Single Forfeit",
             description=f"**Week {week}**\n**{team_one_tag}** FF'd against **{team_two_tag}**"
@@ -390,7 +364,7 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, type)
         ))
     
     elif type == "double":
-        await bot.get_channel(1025198171435049032).send((f"<@&{ROLES['helpers']}>" if PINGHELPERS else ""), embed=discord.Embed(
+        await bot.get_channel(1025198171435049032).send(embed=discord.Embed(
             color=0xFF0000,
             title=f"{team_one_tag} vs. {team_two_tag} - Reported Double Forfeit",
             description=f"**{gamemode} {league} League - Week {week}**\n**{team_one_tag}** and **{team_two_tag}** double FF'd"
@@ -413,8 +387,8 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, type)
     ))
 
 @bot.slash_command(name="requestcaster", description="Used to request a caster, said caster is then pinged in a designated channel with the info.", options=[
-                    discord.Option(name="day", description="Day of the match", type=str),
-                    discord.Option(name="time", description="Time of the match (THIS MUST BE IN EST)", type=str),
+    discord.Option(name="day", description="Day of the match", type=str),
+    discord.Option(name="time", description="Time of the match. MUST BE IN EASTERN TIME.", type=str),
 ])
 async def requestcaster(ctx, day, time):
 
