@@ -202,7 +202,7 @@ async def bug(ctx, anon: bool, message: str):
     if not anon:
         desc = f"**User:** {ctx.author} ({ctx.author.id})\n**Message:** {message}"
     else:
-        desc = f"**Message:** {message}"
+        desc = f"*Anonymous report.*\n**Message:** {message}"
     for member in server.members:
         if ROLES["dev"] in [role.id for role in member.roles]:
             await member.send(embed=discord.Embed(
@@ -219,7 +219,7 @@ async def suggest(ctx, anon: bool, message: str):
     if not anon:
         desc = f"**User:** {ctx.author} ({ctx.author.id})\n**Message:** {message}"
     else:
-        desc = f"**Message:** {message}"
+        desc = f"*Anonymous report.*\n**Message:** {message}"
     for member in server.members:
         if ROLES["dev"] in [role.id for role in member.roles]:
             await member.send(embed=discord.Embed(
