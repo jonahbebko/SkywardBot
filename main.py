@@ -5,12 +5,9 @@ import datetime
 import re
 import asyncio
 
-LOG="""Last updated: January 14, 2023
-- `/report` and `/forfeit` now have guided options, instead of the user figuring out usage through trial and error.
-- A few more embeds with a few more colors.
-- `/suggest` and `/bug` anonymity is fixed.
-- Added `/source` command.
-- Removed `/funny` command for counting how many times SkywardBot has said "This is a DMs-only command" - it didn't work.
+LOG="""Last updated: January 23, 2023
+- Colors of embeds now match the new Skyward Series logo.
+- Removed calls to undefined functions which probably broke the bot a few times.
 """
 
 ROLES = {
@@ -121,14 +118,14 @@ async def help(ctx):
 `/bug <anonymous> <message>` - Report a bug (or funny meme) to joner himself.
 `/suggest <anonymous> <message>` - Suggest a few feature or improvement.
 
-Admins can use any command regardless of role exclusivity.""", color=0x429B97))
+Admins can use any command regardless of role exclusivity.""", color=0xFF9179))
 
 @bot.slash_command(name="ping", description="Sends the bot's latency.")
 async def ping(ctx):
     await ctx.respond(embed=discord.Embed(
         title="Pong!",
         description=f"Pong! Latency is {str(1000.0*bot.latency)[:5]}ms.",
-        color=0x429B97
+        color=0xFF9179
     ))
 
 @bot.slash_command(name="flipout", description="flipout")
@@ -145,7 +142,7 @@ async def source(ctx):
 
 @bot.slash_command(name="log", description="See the recent updates for SkywardBot.")
 async def log(ctx):
-    await ctx.respond(embed=discord.Embed(title="SkywardBot - Log", description=LOG, color=0x429B97))
+    await ctx.respond(embed=discord.Embed(title="SkywardBot - Log", description=LOG, color=0xFF9179))
 
 @bot.slash_command(name="bug", description="Report a bug to joner himself.", options=[
     discord.Option(name="anon", description="Whether to anonymously report your bug. (username and UID will be hidden)", type=bool, required=True),
@@ -183,7 +180,7 @@ async def suggest(ctx, anon, message):
             await member.send(embed=discord.Embed(
                 title="SkywardBot - Suggestion",
                 description=desc,
-                color=0x429B97
+                color=0xFF9179
                 )
             )
 
@@ -196,7 +193,7 @@ async def dm(ctx, role: discord.Role, message: str):
             await member.send(embed=discord.Embed(
                 title="SkywardBot - Message",
                 description=f"**{ctx.author}** says:\n{message}",
-                color=0x429B97
+                color=0xFF9179
                 )
             )
         await ctx.send("Sent.")
@@ -216,12 +213,11 @@ async def dm(ctx, role: discord.Role, message: str):
 async def casterinfo(ctx):
     if ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664:
         await ctx.respond(embed=discord.Embed(
-            color=0x429B97,
+            color=0xFF9179,
             title="Caster Info",
             description="<:dot:1031708752140832768> You can see caster availability [here!](https://docs.google.com/spreadsheets/d/1YfXo1ehAI8GDIiwG6dI09_In2VbxX7TjwBLA0Lgs430/edit?usp=sharing)"
         ))
     else:
-        countdms()
         await ctx.respond(embed=discord.Embed(
             title="SkywardBot - Error",
             description="This is a DMs-only command.",
@@ -290,7 +286,7 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag)
         who_won = f"**{team_one_tag}** and **{team_two_tag}** tied"
 
     await bot.get_channel(1025198171435049032).send(embed=discord.Embed(
-        color=0x429B97,
+        color=0xFF9179,
         title=f"{team_one_tag} vs. {team_two_tag} - Reported Match",
         description=f"**{gamemode} {league} League - Week {week}**\n{who_won} with a score of **{score}**"
     ).set_author(
@@ -301,7 +297,7 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag)
     await ctx.respond(embed=discord.Embed(
         title="SkywardBot - Info",
         description="Report sent.",
-        color=0x429B97
+        color=0xFF9179
     ))
 
 @bot.slash_command(name="forfeit", description="Used to report a forfeit, sends the info to a designated channel.", options=[
@@ -326,7 +322,6 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag)
 async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, type):
 
     if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
-        countdms()
         await ctx.respond(embed=discord.Embed(
             title="SkywardBot - Error",
             description="This is a DMs-only command.",
@@ -340,7 +335,7 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, type)
                 "League must be one of the following: `premier`, `all-star`, `challenger`, `prospect`",
             color=0xFF0000
         )); return
-    league = capitalize(league)
+    league = league.captalize()
 
     if gamemode not in ["2v2", "3v3"]:
         await ctx.respond(embed=discord.Embed(
@@ -383,7 +378,7 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, type)
     await ctx.respond(embed=discord.Embed(
         title="SkywardBot - Info",
         description="Report sent.",
-        color=0x429B97
+        color=0xFF9179
     ))
 
 @bot.slash_command(name="requestcaster", description="Used to request a caster, said caster is then pinged in a designated channel with the info.", options=[
@@ -393,7 +388,6 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, type)
 async def requestcaster(ctx, day, time):
 
     if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
-        countdms()
         await ctx.respond(embed=discord.Embed(
             title="SkywardBot - Error",
             description="This is a DMs-only command.",
@@ -434,7 +428,7 @@ async def requestcaster(ctx, day, time):
     await ctx.send(
         "Please enter the number corresponding to the caster you would like to request:\n",
         embed=discord.Embed(
-            color=0x429B97,
+            color=0xFF9179,
             title="Caster Request Numbers",
             description="\n".join([f"{i+1}. {caster}" for i, caster in enumerate(ids)])
         )
@@ -463,7 +457,7 @@ async def requestcaster(ctx, day, time):
     await ctx.respond(embed=discord.Embed(
         title="SkywardBot - Info",
         description="Caster request sent.",
-        color=0x429B97
+        color=0xFF9179
     ))
 
 try:
