@@ -4,9 +4,9 @@ import datetime
 import re
 import asyncio
 
-LOG="""Last updated: January 23, 2023
-- Colors of embeds now match the new Skyward Series logo.
-- Removed calls to undefined functions which probably broke the bot a few times.
+LOG="""Last updated: February 5, 2023
+- Added optional ballchasers link to /report and /forfeit
+- Corrected some colors to Skyward Orange
 """
 
 ROLES = {
@@ -110,10 +110,10 @@ async def help(ctx):
 `/flipout` - flipout
 `/benjamin` - benjamin
 `/ping` - Check bot latency (my wifi is fine).
-`/source` - Get a link to the GitHub source code for SkywardBot.
 
 **Bot**
 `/log` - See recent changes to SkywardBot.
+`/source` - Get a link to the GitHub source code for SkywardBot.
 `/bug <anonymous> <message>` - Report a bug (or funny meme) to joner himself.
 `/suggest <anonymous> <message>` - Suggest a few feature or improvement.
 
@@ -237,9 +237,10 @@ async def casterinfo(ctx):
     discord.Option(name="week", description="Week of the match", type=int, required=True),
     discord.Option(name="team_one_tag", description="Tag of the first team", type=str, required=True),
     discord.Option(name="score", description="Score of the match", type=str, required=True),
-    discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True)
+    discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True),
+    discord.Option(name="ballchasers", description="Ballchasers link (optional)", type=str, required=False")
 ])
-async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag):
+async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag, ballchasers=None):
 
     if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
         await ctx.respond("This is a DMs-only command."); return
@@ -287,7 +288,8 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag)
     await bot.get_channel(1025198171435049032).send(embed=discord.Embed(
         color=0xFF9179,
         title=f"{team_one_tag} vs. {team_two_tag} - Reported Match",
-        description=f"**{gamemode} {league} League - Week {week}**\n{who_won} with a score of **{score}**"
+        description=f"**{gamemode} {league} League - Week {week}**\n{who_won} with a score of **{score}**" \
+            + (f"\n[**Ballchasers link**]({ballchasers})" if ballchasers else "")
     ).set_author(
         name=ctx.author.display_name,
         icon_url=ctx.author.display_avatar
@@ -313,12 +315,13 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag)
     discord.Option(name="week", description="Week of the match", type=int, required=True),
     discord.Option(name="team_one_tag", description="Tag of the first team (if single FF, this is the FFing team)", type=str, required=True),
     discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True),
-    discord.Option(name="type", description="Type of forfeit - must be 'single' or 'double'", required=True, options=[
+    discord.Option(name="fftype", description="Type of forfeit - must be 'single' or 'double'", required=True, options=[
         discord.Option(name="single", description="Single forfeit."),
         discord.Option(name="double", description="Double forfeit.")
-    ])
+    ]),
+    discord.Option(name="ballchasers", description="Ballchasers link (optional)", type=str, required=False")
 ])
-async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, type):
+async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftype, ballchasers=None):
 
     if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
         await ctx.respond(embed=discord.Embed(
@@ -351,7 +354,8 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, type)
         await bot.get_channel(1025198171435049032).send(embed=discord.Embed(
             color=0xFF0000,
             title=f"{team_one_tag} vs. {team_two_tag} - Reported Single Forfeit",
-            description=f"**Week {week}**\n**{team_one_tag}** FF'd against **{team_two_tag}**"
+            description=f"**Week {week}**\n**{team_one_tag}** FF'd against **{team_two_tag}**" \
+                + (f"\n[**Ballchasers link**]({ballchasers})" if ballchasers else "")
         ).set_author(
             name=ctx.author.display_name,
             icon_url=ctx.author.display_avatar
@@ -361,7 +365,8 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, type)
         await bot.get_channel(1025198171435049032).send(embed=discord.Embed(
             color=0xFF0000,
             title=f"{team_one_tag} vs. {team_two_tag} - Reported Double Forfeit",
-            description=f"**{gamemode} {league} League - Week {week}**\n**{team_one_tag}** and **{team_two_tag}** double FF'd"
+            description=f"**{gamemode} {league} League - Week {week}**\n**{team_one_tag}** and **{team_two_tag}** double FF'd" \
+                + (f"\n[**Ballchasers link**]({ballchasers})" if ballchasers else "")
         ).set_author(
             name=ctx.author.display_name,
             icon_url=ctx.author.display_avatar
