@@ -1,12 +1,13 @@
 import json
 import discord
-import datetime
 import re
 import asyncio
 
 LOG="""Last updated: February 5, 2023
 - Added optional ballchasers link to /report and /forfeit
 - Corrected some colors to Skyward Orange
+- Removed unauthorized admin command usage logging because I don't really care
+- Fixed a silly goofy error that broke the entire bot sometimes
 """
 
 ROLES = {
@@ -203,10 +204,6 @@ async def dm(ctx, role: discord.Role, message: str):
             color=0xFF0000
             )
         )
-        today = datetime.datetime.now().strftime("%m/%d/%y %H:%M:%S")
-        with open("log.txt", "w+") as logf:
-            logf.write(f"[{today}] {ctx.author} attempted to use /dm on role \"{role}\" with message \"{message}\"")
-        print(f"[{today}] {ctx.author} attempted to use /dm on role \"{role}\" with message \"{message}\"")
 
 @bot.slash_command(name="casterinfo", description="Sends a list of caster availability.")
 async def casterinfo(ctx):
@@ -238,7 +235,7 @@ async def casterinfo(ctx):
     discord.Option(name="team_one_tag", description="Tag of the first team", type=str, required=True),
     discord.Option(name="score", description="Score of the match", type=str, required=True),
     discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True),
-    discord.Option(name="ballchasers", description="Ballchasers link (optional)", type=str, required=False")
+    discord.Option(name="ballchasers", description="Ballchasers link (optional)", type=str, required=False)
 ])
 async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag, ballchasers=None):
 
@@ -319,7 +316,7 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
         discord.Option(name="single", description="Single forfeit."),
         discord.Option(name="double", description="Double forfeit.")
     ]),
-    discord.Option(name="ballchasers", description="Ballchasers link (optional)", type=str, required=False")
+    discord.Option(name="ballchasers", description="Ballchasers link (optional)", type=str, required=False)
 ])
 async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftype, ballchasers=None):
 
