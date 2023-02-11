@@ -240,7 +240,7 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
     else:
         who_won = f"**{team_one_tag}** and **{team_two_tag}** tied"
 
-    if "ballchasing.com/replay/" not in ballchasing:
+    if "ballchasing.com/" not in ballchasing:
         await ctx.respond(embed=discord.Embed(
         title="SkywardBot - Error",
         description=f"Ballchasing link must be valid and point to a replay.",
@@ -341,7 +341,7 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
             color=0xFF0000
         )); return
         
-    if "ballchasing.com/replay/" not in ballchasing:
+    if "ballchasing.com/" not in ballchasing:
             await ctx.respond(embed=discord.Embed(
             title="SkywardBot - Error",
             description=f"Ballchasing link must be valid and point to a replay.",
