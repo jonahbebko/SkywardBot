@@ -1,10 +1,10 @@
 import json
 import discord #py-cord, not discord.py
 
-LOG="""Last updated: February 7, 2023
-- Removed commented-out functions, because version control exists
-- Changed /casterinfo to link to UrNextUp
-- Removed /requestcaster
+LOG="""Last updated: February 10, 2023
+- Changed ballchasers to ballchasing (whoops)
+- Fixed lowercase bug in /report and /forfeit
+- Added ballchasing link validity check
 """
 
 ROLES = {
@@ -193,14 +193,14 @@ async def casterinfo(ctx):
     discord.Option(name="team_one_tag", description="Tag of the first team", type=str, required=True),
     discord.Option(name="score", description="Score of the match", type=str, required=True),
     discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True),
-    discord.Option(name="ballchasers", description="Ballchasers link (optional)", type=str, required=False)
+    discord.Option(name="ballchasing", description="Ballchasing link (optional)", type=str, required=False)
 ])
-async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag, ballchasers=None):
+async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag, ballchasing=None):
 
     if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
         await ctx.respond("This is a DMs-only command."); return
     
-    if league not in ["premier", "all-star", "challenger", "prospect"]:
+    if league.lower() not in ["premier", "all-star", "challenger", "prospect"]:
         await ctx.respond(embed=discord.Embed(
             title="SkywardBot - Error",
             description=f"**Error** in parameter `league`, given '{league}'\n" + \
@@ -240,11 +240,18 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
     else:
         who_won = f"**{team_one_tag}** and **{team_two_tag}** tied"
 
+    if "ballchasing.com/replay/" not in ballchasing:
+        await ctx.respond(embed=discord.Embed(
+        title="SkywardBot - Error",
+        description=f"Ballchasing link must be valid and point to a replay.",
+        color=0xFF0000
+    )); return
+
     await bot.get_channel(1025198171435049032).send(embed=discord.Embed(
         color=0xFF9179,
         title=f"{team_one_tag} vs. {team_two_tag} - Reported Match",
         description=f"**{gamemode} {league} League - Week {week}**\n{who_won} with a score of **{score}**" \
-            + (f"\n[**Ballchasers link**]({ballchasers})" if ballchasers else "")
+            + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
     ).set_author(
         name=ctx.author.display_name,
         icon_url=ctx.author.display_avatar
@@ -274,9 +281,9 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
         discord.Option(name="single", description="Single forfeit."),
         discord.Option(name="double", description="Double forfeit.")
     ]),
-    discord.Option(name="ballchasers", description="Ballchasers link (optional)", type=str, required=False)
+    discord.Option(name="ballchasing", description="Ballchasing link (optional)", type=str, required=False)
 ])
-async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftype, ballchasers=None):
+async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftype, ballchasing=None):
 
     if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
         await ctx.respond(embed=discord.Embed(
@@ -285,7 +292,7 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
             color=0xFF0000
         )); return
 
-    if league not in ["premier", "all-star", "challenger", "prospect"]:
+    if league.lower() not in ["premier", "all-star", "challenger", "prospect"]:
         await ctx.respond(embed=discord.Embed(
             title="SkywardBot - Error",
             description=f"**Error** in parameter `league`, given '{league}'\n" + \
@@ -310,7 +317,7 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
             color=0xFF0000,
             title=f"{team_one_tag} vs. {team_two_tag} - Reported Single Forfeit",
             description=f"**Week {week}**\n**{team_one_tag}** FF'd against **{team_two_tag}**" \
-                + (f"\n[**Ballchasers link**]({ballchasers})" if ballchasers else "")
+                + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
         ).set_author(
             name=ctx.author.display_name,
             icon_url=ctx.author.display_avatar
@@ -321,7 +328,7 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
             color=0xFF0000,
             title=f"{team_one_tag} vs. {team_two_tag} - Reported Double Forfeit",
             description=f"**{gamemode} {league} League - Week {week}**\n**{team_one_tag}** and **{team_two_tag}** double FF'd" \
-                + (f"\n[**Ballchasers link**]({ballchasers})" if ballchasers else "")
+                + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
         ).set_author(
             name=ctx.author.display_name,
             icon_url=ctx.author.display_avatar
@@ -333,7 +340,14 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
             description=f"**Error** in parameter `type`, given '{type}'\nType must be either 'single' or 'double'.",
             color=0xFF0000
         )); return
-    
+        
+    if "ballchasing.com/replay/" not in ballchasing:
+            await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Error",
+            description=f"Ballchasing link must be valid and point to a replay.",
+            color=0xFF0000
+        )); return
+
     await ctx.respond(embed=discord.Embed(
         title="SkywardBot - Info",
         description="Report sent.",
