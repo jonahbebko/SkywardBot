@@ -29,9 +29,6 @@ intents.members = True
 
 bot = discord.Bot(intents=intents)
 
-with open('ids.json') as f:
-    ids = json.load(f)
-
 @bot.event
 async def on_ready():
     print(f"{bot.user} is online")
