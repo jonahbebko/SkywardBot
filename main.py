@@ -1,5 +1,6 @@
 import json
 import discord #py-cord, not discord.py
+from datetime import datetime
 
 LOG="""Last updated: February 10, 2023
 - Changed ballchasers to ballchasing (whoops)
@@ -51,6 +52,16 @@ async def on_message(ctx):
             user = bot.get_user(int(ctx.content.split()[1]))
         await user.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
+
+@bot.event
+async def on_member_join(member):
+    channel = bot.get_channel(1031781423864090664)
+    await channel.send(f"{member} joined at {datetime.now()}")
+
+@bot.event
+async def on_member_remove(member):
+    channel = bot.get_channel(1031781423864090664)
+    await channel.send(f"{member} left at {datetime.now()}")
 
 @bot.slash_command(name="help", description="Show list of commands.")
 async def help(ctx):
