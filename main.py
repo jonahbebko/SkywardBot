@@ -69,12 +69,11 @@ async def help(ctx):
 `/dm <role> <message>` - Sends a message in dms to everyone with the pinged role.
 
 **Casters** (DMs only)
-`/casterinfo` - Get a list of casters and their availability.
-`/requestcaster <ID> <day> <time>` - Request a caster for a match.
+`/casterinfo` - Get a list of casters and their availability through UNU.
 
 **Match Reporting** (Captains and DMs only)
-`/report <week> <ID> <score-score> <ID>` - Report a match.
-`/forfeit <week> <ID> <ID> <type>` - Report a forfeit.
+`/report <league> <gamemode> <week> <ID> <score-score> <ID> [ballchasing]` - Report a match.
+`/forfeit <league> <gamemode> <week> <ID> <ID> <type> [ballchasing]` - Report a forfeit.
 
 **Misc**
 `/flipout` - flipout
