@@ -351,7 +351,7 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
     else:
         await ctx.respond(embed=discord.Embed(
             title="SkywardBot - Error",
-            description=f"**Error** in parameter `type`, given '{type}'\nType must be either 'single' or 'double'.",
+            description=f"**Error** in parameter `type`, given '{fftype}'\nType must be either 'single' or 'double'.",
             color=0xFF0000
         )); return
 
