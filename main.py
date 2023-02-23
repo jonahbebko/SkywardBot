@@ -319,6 +319,13 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
     try: int(week)
     except: await ctx.respond(f"**Error** in parameter `week`, given '{week}'\nWeek must be a number."); return
 
+    if ("ballchasing.com/" not in str(ballchasing)) and (ballchasing != None):
+            await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Error",
+            description=f"Ballchasing link must be valid and point to a replay.",
+            color=0xFF0000
+        )); return
+
     if type == "single":
         await bot.get_channel(1025198171435049032).send(embed=discord.Embed(
             color=0xFF0000,
@@ -345,13 +352,6 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
         await ctx.respond(embed=discord.Embed(
             title="SkywardBot - Error",
             description=f"**Error** in parameter `type`, given '{type}'\nType must be either 'single' or 'double'.",
-            color=0xFF0000
-        )); return
-        
-    if ("ballchasing.com/" not in str(ballchasing)) and (ballchasing != None):
-            await ctx.respond(embed=discord.Embed(
-            title="SkywardBot - Error",
-            description=f"Ballchasing link must be valid and point to a replay.",
             color=0xFF0000
         )); return
 
