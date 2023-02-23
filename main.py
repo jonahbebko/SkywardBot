@@ -326,7 +326,7 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
             color=0xFF0000
         )); return
 
-    if type == "single":
+    if fftype == "single":
         await bot.get_channel(1025198171435049032).send(embed=discord.Embed(
             color=0xFF0000,
             title=f"{team_one_tag} vs. {team_two_tag} - Reported Single Forfeit",
@@ -337,7 +337,7 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
             icon_url=ctx.author.display_avatar
         ))
     
-    elif type == "double":
+    elif fftype == "double":
         await bot.get_channel(1025198171435049032).send(embed=discord.Embed(
             color=0xFF0000,
             title=f"{team_one_tag} vs. {team_two_tag} - Reported Double Forfeit",
