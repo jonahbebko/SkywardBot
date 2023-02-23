@@ -214,7 +214,7 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
                 "League must be one of the following: `premier`, `all-star`, `challenger`, `prospect`",
             color=0xFF0000
         )); return
-    league = league.capitalize()
+    league = capitalize(league)
 
     if gamemode not in ["2v2", "3v3"]:
         await ctx.respond(embed=discord.Embed(
