@@ -1,4 +1,3 @@
-import json
 import discord #py-cord, not discord.py
 from datetime import datetime
 
