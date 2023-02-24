@@ -40,9 +40,9 @@ async def error_embed(ctx, e):
             await member.send(f"SOMETHING WENT WRONG FUCKFACE\n{e}")
 
 def catch_errors(func):
-    async def wrapper(ctx, *args):
+    async def wrapper(ctx, **kwargs):
         try:
-            return await func(ctx, *args)
+            return await func(ctx, **kwargs)
         except Exception as e:
             print(e)
             await error_embed(ctx, e)
