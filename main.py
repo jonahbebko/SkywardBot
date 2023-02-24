@@ -1,10 +1,9 @@
 import discord #py-cord, not discord.py
 from datetime import datetime
 
-LOG="""Last updated: February 10, 2023
-- Changed ballchasers to ballchasing (whoops)
-- Fixed lowercase bug in /report and /forfeit
-- Added ballchasing link validity check
+LOG="""Last updated: February 23, 2023
+- Fixed broken capitalization calls, took the bot down
+- Better error handling: bot will now DM Jonah when something goes wrong
 """
 
 ROLES = {
