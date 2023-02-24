@@ -28,6 +28,26 @@ intents.members = True
 
 bot = discord.Bot(intents=intents)
 
+async def error_embed(ctx, e):
+    await ctx.respond(embed=discord.Embed(
+        title="Error!",
+        description="Something went wrong!\nThe error has been logged and DM'd to Jonah.",
+        color=0xFF0000
+    ))
+    server = bot.get_guild(991005374314328124)
+    for member in server.members:
+        if ROLES["dev"] in [role.id for role in member.roles]:
+            await member.send(f"SOMETHING WENT WRONG FUCKFACE\n{e}")
+
+async def catch_errors(func):
+    async def wrapper(ctx):
+        try:
+            await func(ctx)
+        except Exception as e:
+            print(e)
+            await error_embed(ctx, e)
+    return wrapper
+
 @bot.event
 async def on_ready():
     print(f"{bot.user} is online")
@@ -74,6 +94,7 @@ async def help(ctx):
 **Misc**
 `/flipout` - flipout
 `/benjamin` - benjamin
+`/cxrrxnt` - cxrrxnt
 `/ping` - Check bot latency (my wifi is fine).
 
 **Bot**
@@ -100,6 +121,10 @@ async def flipout(ctx):
 async def benjamin(ctx):
     await ctx.respond("benjamin :flushed:")
 
+@bot.slash_command(name="cxrrxnt", description="cxrrxnt")
+async def cxrrxnt(ctx):
+    await ctx.respond("https://cdn.discordapp.com/attachments/1031781423864090664/1078482799343976489/attachment.png")
+
 @bot.slash_command(name="source", description="Get a link to the GitHub source code for SkywardBot.")
 async def source(ctx):
     await ctx.respond(embed=discord.Embed(title="SkywardBot - Source Code", description="You can view the source code of SkywardBot here:\nhttp://github.com/jonahbebko/SkywardBot"))
@@ -112,6 +137,7 @@ async def log(ctx):
     discord.Option(name="anon", description="Whether to anonymously report your bug. (username and UID will be hidden)", type=bool, required=True),
     discord.Option(name="message", description="The bug you encountered.", type=str, required=True)
 ])
+@catch_errors
 async def bug(ctx, anon, message):
     await ctx.respond("Bug reported! Thanks for your help.")
     server = bot.get_guild(991005374314328124)
@@ -132,6 +158,7 @@ async def bug(ctx, anon, message):
     discord.Option(name="anon", description="Whether to anonymously send your suggestion. (username and UID will be hidden)", type=bool, required=True),
     discord.Option(name="message", description="The suggestion you want to provide.", type=str, required=True)
 ])
+@catch_errors
 async def suggest(ctx, anon, message):
     await ctx.respond("Suggestion sent! Thanks for your help.")
     server = bot.get_guild(991005374314328124)
@@ -149,6 +176,7 @@ async def suggest(ctx, anon, message):
             )
 
 @bot.slash_command(name="dm", description="Sends a message in dms to everyone with the pinged role.")
+@catch_errors
 async def dm(ctx, role: discord.Role, message: str):
     if ctx.author.guild_permissions.administrator:
         await ctx.respond(f"Sending message to all members with role **\"{role}\"** (ID: {role.id})...")
@@ -170,6 +198,7 @@ async def dm(ctx, role: discord.Role, message: str):
         )
 
 @bot.slash_command(name="casterinfo", description="Sends a list of caster availability.")
+@catch_errors
 async def casterinfo(ctx):
     if ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664:
         await ctx.respond(embed=discord.Embed(
@@ -201,6 +230,7 @@ async def casterinfo(ctx):
     discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True),
     discord.Option(name="ballchasing", description="Ballchasing link (optional)", type=str, required=False)
 ])
+@catch_errors
 async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag, ballchasing=None):
 
     if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
@@ -289,6 +319,7 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
     ]),
     discord.Option(name="ballchasing", description="Ballchasing link (optional)", type=str, required=False)
 ])
+@catch_errors
 async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftype, ballchasing=None):
 
     if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
