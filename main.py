@@ -46,7 +46,7 @@ async def catch_errors(func):
         except Exception as e:
             print(e)
             await error_embed(ctx, e)
-    return wrapper
+    return await wrapper
 
 @bot.event
 async def on_ready():
