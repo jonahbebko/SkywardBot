@@ -39,14 +39,14 @@ async def error_embed(ctx, e):
         if ROLES["dev"] in [role.id for role in member.roles]:
             await member.send(f"SOMETHING WENT WRONG FUCKFACE\n{e}")
 
-async def catch_errors(func):
+def catch_errors(func):
     async def wrapper(ctx):
         try:
-            await func(ctx)
+            return await func(ctx)
         except Exception as e:
             print(e)
             await error_embed(ctx, e)
-    return await wrapper
+    return wrapper
 
 @bot.event
 async def on_ready():
