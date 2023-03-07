@@ -360,7 +360,7 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
             await bot.get_channel(1025198171435049032).send(embed=discord.Embed(
                 color=0xFF0000,
                 title=f"{team_one_tag} vs. {team_two_tag} - Reported Single Forfeit",
-                description=f"**Week {week}**\n**{team_one_tag}** FF'd against **{team_two_tag}**" \
+                description=f"**{gamemode} {league} League - Week {week}**\n**{team_one_tag}** FF'd against **{team_two_tag}**" \
                     + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
             ).set_author(
                 name=ctx.author.display_name,
