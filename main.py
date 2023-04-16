@@ -63,7 +63,7 @@ async def on_message(ctx):
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
     if "ratio" in ctx.content.lower():
         #react with ⬆️
-        await ctx.add_reaction(discord.PartialEmoji(name="⬆️", id=1031270343085654107))
+        await ctx.add_reaction(discord.PartialEmoji(name="arrow_up"))
 
 @bot.event
 async def on_member_join(member):
