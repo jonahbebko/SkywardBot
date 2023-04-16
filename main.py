@@ -62,8 +62,7 @@ async def on_message(ctx):
         await user.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
     if "ratio" in ctx.content.lower():
-        #react with up arrow emoji
-        await ctx.add_reaction(":arrow_up:")
+        await ctx.add_reaction("\N{UP ARROW}")
 
 @bot.event
 async def on_member_join(member):
