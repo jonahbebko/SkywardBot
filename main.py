@@ -62,18 +62,18 @@ async def on_message(ctx):
         await user.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
     if "ratio" in ctx.content:
-        #react with a white arrow up emoji
-        await ctx.add_reaction(emoji="⬆️")
+        #react with ⬆️
+        await ctx.add_reaction("⬆️")
 
 @bot.event
 async def on_member_join(member):
     channel = bot.get_channel(1031781423864090664)
-    await channel.send(f"{member} joined at {datetime.now()}")
+    await channel.send(f"{member} joined at {datetime.now()[:19]}")
 
 @bot.event
 async def on_member_remove(member):
     channel = bot.get_channel(1031781423864090664)
-    await channel.send(f"{member} left at {datetime.now()}")
+    await channel.send(f"{member} left at {datetime.now()[:19]}")
 
 @bot.slash_command(name="help", description="Show list of commands.")
 async def help(ctx):
