@@ -62,7 +62,7 @@ async def on_message(ctx):
         await user.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
     if "ratio" in ctx.content.lower():
-        await ctx.add_reaction("<:arrow_up:>")
+        await ctx.add_reaction("<:arrow_up:1097264010795176086>")
 
 @bot.event
 async def on_member_join(member):
