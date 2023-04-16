@@ -27,16 +27,19 @@ intents.members = True
 
 bot = discord.Bot(intents=intents)
 
-async def error_embed(ctx, e):
+async def error_embed(ctx, e, *args):
     await ctx.respond(embed=discord.Embed(
         title="Error!",
         description="Something went wrong!\nThe error has been logged and DM'd to Jonah.",
         color=0xFF0000
     ))
     server = bot.get_guild(991005374314328124)
+    thang = """**Parameters**\n"""
+    for arg in args:
+        thang += (f"{arg}: " + str(type(arg)) + "\n")
     for member in server.members:
         if ROLES["dev"] in [role.id for role in member.roles]:
-            await member.send(f"SOMETHING WENT WRONG FUCKFACE\n{e}")
+            await member.send(f"SOMETHING WENT WRONG FUCKFACE\n{e}\n\n{thang}")
 
 @bot.event
 async def on_ready():
@@ -58,6 +61,9 @@ async def on_message(ctx):
             user = bot.get_user(int(ctx.content.split()[1]))
         await user.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
+    if "ratio" in ctx.content:
+        #react with a white arrow up emoji
+        await ctx.add_reaction(emoji="⬆️")
 
 @bot.event
 async def on_member_join(member):
@@ -144,7 +150,7 @@ async def bug(ctx, anon, message):
                     )
                 )
     except Exception as e:
-        await error_embed(ctx, e)
+        await error_embed(ctx, e, anon, message)
 
 @bot.slash_command(name="suggest", description="Suggest a new feature or improvement.", options=[
     discord.Option(name="anon", description="Whether to anonymously send your suggestion. (username and UID will be hidden)", type=bool, required=True),
@@ -167,18 +173,22 @@ async def suggest(ctx, anon, message):
                     )
                 )
     except Exception as e:
-        await error_embed(ctx, e)
+        await error_embed(ctx, e, anon, message)
 
 @bot.slash_command(name="dm", description="Sends a message in dms to everyone with the pinged role.")
-async def dm(ctx, role: discord.Role, message: str):
+async def dm(ctx, anon: bool, role: discord.Role, message: str):
+    if anon: a = "yes"
+    else: a = "no"
     try:
         if ctx.author.guild_permissions.administrator:
-            await ctx.respond(f"Sending message to all members with role **\"{role}\"** (ID: {role.id})...")
+            await ctx.respond(f"Anonymity: {a}\nSending message to all members with role **\"{role}\"** (ID: {role.id})...")
+            if anon: a = ctx.author
+            else: a = "Anonymous"
             # send message to all members with role
             for member in role.members:
                 await member.send(embed=discord.Embed(
                     title="SkywardBot - Message",
-                    description=f"**{ctx.author}** says:\n{message}",
+                    description=f"**{a}** says:\n{message}",
                     color=0xFF9179
                     )
                 )
@@ -191,7 +201,7 @@ async def dm(ctx, role: discord.Role, message: str):
                 )
             )
     except Exception as e:
-        await error_embed(ctx, e)
+        await error_embed(ctx, e, anon, role, message)
 
 @bot.slash_command(name="casterinfo", description="Sends a list of caster availability.")
 async def casterinfo(ctx):
@@ -296,7 +306,7 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
         ))
 
     except Exception as e:
-        await error_embed(ctx, e)
+        await error_embed(ctx, e, league, gamemode, week, team_one_tag, score, team_two_tag, ballchasing)
 
 @bot.slash_command(name="forfeit", description="Used to report a forfeit, sends the info to a designated channel.", options=[
     discord.Option(name="league", description="League played.", required=True, options=[
@@ -392,7 +402,7 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
         ))
     
     except Exception as e:
-        await error_embed(ctx, e)
+        await error_embed(ctx, e, league, gamemode, week, team_one_tag, team_two_tag, fftype, ballchasing)
 
 try:
     open("token.txt").close()
