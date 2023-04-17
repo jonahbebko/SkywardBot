@@ -23,6 +23,7 @@ USERALISES = {
 }
 
 intents = discord.Intents.default()
+intents.message_content = True
 intents.members = True
 
 bot = discord.Bot(intents=intents)
@@ -48,7 +49,6 @@ async def on_ready():
 
 @bot.event
 async def on_message(ctx):
-    print(f"a message has been sent: {ctx.content} {ctx.message}")
     if ctx.author == bot.user:
         return
     if ctx.content.startswith('!!!send'):
@@ -62,7 +62,7 @@ async def on_message(ctx):
             user = bot.get_user(int(ctx.content.split()[1]))
         await user.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
-    if "ratio" in ctx.content:
+    if "ratio" in ctx.content.lower():
         print(f"found {ctx.content} {ctx.content.lower} {ctx.content.lower()}")
         await ctx.add_reaction("⬆️")
 
