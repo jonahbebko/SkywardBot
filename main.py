@@ -134,7 +134,7 @@ async def log(ctx):
         "anonymous",
         "not anonymous"
     ], required=True),
-    discord.Option(name="message", description="The bug you encountered.", type=str, required=True)
+    discord.Option(name="message", description="The bug you encountered.", required=True)
 ])
 async def bug(ctx, anon, message):
     try:
@@ -156,11 +156,11 @@ async def bug(ctx, anon, message):
         await error_embed(ctx, e, anon, message)
 
 @bot.slash_command(name="suggest", description="Suggest a new feature or improvement.", options=[
-    discord.Option(name="anon", description="Whether to anonymously send your suggestion. (username and UID will be hidden)", type=bool, choices=[
+    discord.Option(name="anon", description="Whether to anonymously send your suggestion. (username and UID will be hidden)", choices=[
         "anonymous",
         "not anonymous"
     ], required=True),
-    discord.Option(name="message", description="The suggestion you want to provide.", type=str, required=True)
+    discord.Option(name="message", description="The suggestion you want to provide.", required=True)
 ])
 async def suggest(ctx, anon, message):
     try:
@@ -182,12 +182,12 @@ async def suggest(ctx, anon, message):
         await error_embed(ctx, e, anon, message)
 
 @bot.slash_command(name="dm", description="Sends a message in dms to everyone with the pinged role.", options=[
-    discord.Option(name="anon", description="Whether to send the message anonymously.", type=bool, choices=[
+    discord.Option(name="anon", description="Whether to send the message anonymously.", choices=[
         "anonymous",
         "not anonymous"
     ], required=True),
-    discord.Option(name="role", description="The role to send the message to.", type=discord.Role, required=True),
-    discord.Option(name="message", description="The message to send.", type=str, required=True)
+    discord.Option(name="role", description="The role to send the message to.", input_type=discord.Role, required=True),
+    discord.Option(name="message", description="The message to send.", required=True)
 ])
 async def dm(ctx, anon, role, message):
     try:
@@ -236,11 +236,11 @@ async def casterinfo(ctx):
     discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", required=True, options=[
         "2v2", "3v3"
     ]),
-    discord.Option(name="week", description="Week of the match", type=int, required=True),
-    discord.Option(name="team_one_tag", description="Tag of the first team", type=str, required=True),
-    discord.Option(name="score", description="Score of the match", type=str, required=True),
-    discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True),
-    discord.Option(name="ballchasing", description="Ballchasing link (optional)", type=str, required=False)
+    discord.Option(name="week", description="Week of the match", input_type=int, required=True),
+    discord.Option(name="team_one_tag", description="Tag of the first team", required=True),
+    discord.Option(name="score", description="Score of the match", required=True),
+    discord.Option(name="team_two_tag", description="Tag of the second team", required=True),
+    discord.Option(name="ballchasing", description="Ballchasing link (optional)", required=False)
 ])
 async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag, ballchasing=None):
 
@@ -322,14 +322,14 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
     discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", required=True, options=[
         "2v2", "3v3"
     ]),
-    discord.Option(name="week", description="Week of the match", type=int, required=True),
-    discord.Option(name="team_one_tag", description="Tag of the first team (if single FF, this is the FFing team)", type=str, required=True),
-    discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True),
+    discord.Option(name="week", description="Week of the match", input_type=int, required=True),
+    discord.Option(name="team_one_tag", description="Tag of the first team (if single FF, this is the FFing team)",required=True),
+    discord.Option(name="team_two_tag", description="Tag of the second team", required=True),
     discord.Option(name="fftype", description="Type of forfeit", required=True, options=[
         "single",
         "double"
     ]),
-    discord.Option(name="ballchasing", description="Ballchasing link (optional)", type=str, required=False)
+    discord.Option(name="ballchasing", description="Ballchasing link (optional)", required=False)
 ])
 async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftype, ballchasing=None):
 
