@@ -130,7 +130,10 @@ async def log(ctx):
     await ctx.respond(embed=discord.Embed(title="SkywardBot - Log", description=LOG, color=0xFF9179))
 
 @bot.slash_command(name="bug", description="Report a bug to joner himself.", options=[
-    discord.Option(name="anon", description="Whether to anonymously report your bug. (username and UID will be hidden)", type=bool, required=True),
+    discord.Option(name="anon", description="Whether to anonymously report your bug. (username and UID will be hidden)", type=bool, options=[
+        discord.OptionChoice(name="anonymous", value=True),
+        discord.OptionChoice(name="not anonymous", value=False)
+    ], required=True),
     discord.Option(name="message", description="The bug you encountered.", type=str, required=True)
 ])
 async def bug(ctx, anon, message):
@@ -153,7 +156,10 @@ async def bug(ctx, anon, message):
         await error_embed(ctx, e, anon, message)
 
 @bot.slash_command(name="suggest", description="Suggest a new feature or improvement.", options=[
-    discord.Option(name="anon", description="Whether to anonymously send your suggestion. (username and UID will be hidden)", type=bool, required=True),
+    discord.Option(name="anon", description="Whether to anonymously send your suggestion. (username and UID will be hidden)", type=bool, choices=[
+        discord.OptionChoice(name="anonymous", value=True),
+        discord.OptionChoice(name="not anonymous", value=False)
+    ], required=True),
     discord.Option(name="message", description="The suggestion you want to provide.", type=str, required=True)
 ])
 async def suggest(ctx, anon, message):
@@ -175,8 +181,15 @@ async def suggest(ctx, anon, message):
     except Exception as e:
         await error_embed(ctx, e, anon, message)
 
-@bot.slash_command(name="dm", description="Sends a message in dms to everyone with the pinged role.")
-async def dm(ctx, anon: bool, role: discord.Role, message: str):
+@bot.slash_command(name="dm", description="Sends a message in dms to everyone with the pinged role.", options=[
+    discord.Option(name="anon", description="Whether to send the message anonymously.", type=bool, choices=[
+        discord.OptionChoice(name="anonymous", value=True),
+        discord.OptionChoice(name="not anonymous", value=False)
+    ], required=True),
+    discord.Option(name="role", description="The role to send the message to.", type=discord.Role, required=True),
+    discord.Option(name="message", description="The message to send.", type=str, required=True)
+])
+async def dm(ctx, anon, role, message):
     if anon: a = "yes"
     else: a = "no"
     try:
@@ -218,16 +231,12 @@ async def casterinfo(ctx):
             color=0xFF0000
         )); return
 
-@bot.slash_command(name="report", description="Used to report match, sends the info to a designated channel.", options=[
+@bot.slash_command(name="report", description="Used to report match, sends the info to a designated channel", options=[
     discord.Option(name="league", description="League played.", required=True, options=[
-        discord.Option(name="premier", description="Premier league."),
-        discord.Option(name="all-star", description="All-star league."),
-        discord.Option(name="challenger", description="Challenger league."),
-        discord.Option(name="prospect", description="Prospect league.")
+        "premier", "all-star", "challenger", "prospect"
     ]),
     discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", required=True, options=[
-        discord.Option(name="2v2", description="2v2 gamemode."),
-        discord.Option(name="3v3", description="3v3 gamemode.")
+        "2v2", "3v3"
     ]),
     discord.Option(name="week", description="Week of the match", type=int, required=True),
     discord.Option(name="team_one_tag", description="Tag of the first team", type=str, required=True),
@@ -309,22 +318,18 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
         await error_embed(ctx, e, league, gamemode, week, team_one_tag, score, team_two_tag, ballchasing)
 
 @bot.slash_command(name="forfeit", description="Used to report a forfeit, sends the info to a designated channel.", options=[
-    discord.Option(name="league", description="League played.", required=True, options=[
-        discord.Option(name="premier", description="Premier league."),
-        discord.Option(name="all-star", description="All-star league."),
-        discord.Option(name="challenger", description="Challenger league."),
-        discord.Option(name="prospect", description="Prospect league.")
+    discord.Option(name="league", description="League played", required=True, options=[
+        "premier", "all-star", "challenger", "prospect"
     ]),
     discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", required=True, options=[
-        discord.Option(name="2v2", description="2v2 gamemode."),
-        discord.Option(name="3v3", description="3v3 gamemode.")
+        "2v2", "3v3"
     ]),
     discord.Option(name="week", description="Week of the match", type=int, required=True),
     discord.Option(name="team_one_tag", description="Tag of the first team (if single FF, this is the FFing team)", type=str, required=True),
     discord.Option(name="team_two_tag", description="Tag of the second team", type=str, required=True),
-    discord.Option(name="fftype", description="Type of forfeit - must be 'single' or 'double'", required=True, options=[
-        discord.Option(name="single", description="Single forfeit."),
-        discord.Option(name="double", description="Double forfeit.")
+    discord.Option(name="fftype", description="Type of forfeit", required=True, options=[
+        "single",
+        "double"
     ]),
     discord.Option(name="ballchasing", description="Ballchasing link (optional)", type=str, required=False)
 ])
