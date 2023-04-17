@@ -62,6 +62,7 @@ async def on_message(ctx):
         await user.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
     if "ratio" in ctx.content.lower():
+        print(f"found {ctx.content} {ctx.content.lower} {ctx.content.lower()}")
         await ctx.add_reaction("⬆️")
 
 @bot.event
