@@ -48,7 +48,7 @@ async def on_ready():
 
 @bot.event
 async def on_message(ctx):
-    print(f"a message has been sent: {ctx.content}")
+    print(f"a message has been sent: {ctx.content} {ctx.message}")
     if ctx.author == bot.user:
         return
     if ctx.content.startswith('!!!send'):
