@@ -130,9 +130,9 @@ async def log(ctx):
     await ctx.respond(embed=discord.Embed(title="SkywardBot - Log", description=LOG, color=0xFF9179))
 
 @bot.slash_command(name="bug", description="Report a bug to joner himself.", options=[
-    discord.Option(name="anon", description="Whether to anonymously report your bug. (username and UID will be hidden)", type=bool, options=[
-        discord.OptionChoice(name="anonymous", value=True),
-        discord.OptionChoice(name="not anonymous", value=False)
+    discord.Option(name="anon", description="Whether to anonymously report your bug. (username and UID will be hidden)", options=[
+        "anonymous",
+        "not anonymous"
     ], required=True),
     discord.Option(name="message", description="The bug you encountered.", type=str, required=True)
 ])
@@ -140,7 +140,7 @@ async def bug(ctx, anon, message):
     try:
         await ctx.respond("Bug reported! Thanks for your help.")
         server = bot.get_guild(991005374314328124)
-        if not anon:
+        if anon == "anonymous":
             desc = f"**User:** {ctx.author} ({ctx.author.id})\n**Message:** {message}"
         else:
             desc = f"*Anonymous report.*\n**Message:** {message}"
@@ -157,8 +157,8 @@ async def bug(ctx, anon, message):
 
 @bot.slash_command(name="suggest", description="Suggest a new feature or improvement.", options=[
     discord.Option(name="anon", description="Whether to anonymously send your suggestion. (username and UID will be hidden)", type=bool, choices=[
-        discord.OptionChoice(name="anonymous", value=True),
-        discord.OptionChoice(name="not anonymous", value=False)
+        "anonymous",
+        "not anonymous"
     ], required=True),
     discord.Option(name="message", description="The suggestion you want to provide.", type=str, required=True)
 ])
@@ -166,7 +166,7 @@ async def suggest(ctx, anon, message):
     try:
         await ctx.respond("Suggestion sent! Thanks for your help.")
         server = bot.get_guild(991005374314328124)
-        if not anon:
+        if anon == "anonymous":
             desc = f"**User:** {ctx.author} ({ctx.author.id})\n**Message:** {message}"
         else:
             desc = f"*Anonymous report.*\n**Message:** {message}"
@@ -183,20 +183,18 @@ async def suggest(ctx, anon, message):
 
 @bot.slash_command(name="dm", description="Sends a message in dms to everyone with the pinged role.", options=[
     discord.Option(name="anon", description="Whether to send the message anonymously.", type=bool, choices=[
-        discord.OptionChoice(name="anonymous", value=True),
-        discord.OptionChoice(name="not anonymous", value=False)
+        "anonymous",
+        "not anonymous"
     ], required=True),
     discord.Option(name="role", description="The role to send the message to.", type=discord.Role, required=True),
     discord.Option(name="message", description="The message to send.", type=str, required=True)
 ])
 async def dm(ctx, anon, role, message):
-    if anon: a = "yes"
-    else: a = "no"
     try:
         if ctx.author.guild_permissions.administrator:
-            await ctx.respond(f"Anonymity: {a}\nSending message to all members with role **\"{role}\"** (ID: {role.id})...")
-            if anon: a = ctx.author
-            else: a = "Anonymous"
+            await ctx.respond(f"Anonymity: {anon}\nSending message to all members with role **\"{role}\"** (ID: {role.id})...")
+            if anon == "anonymous": a = "Anonymous"
+            else: a = ctx.author
             # send message to all members with role
             for member in role.members:
                 await member.send(embed=discord.Embed(
