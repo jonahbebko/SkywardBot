@@ -24,7 +24,7 @@ USERALISES = {
 }
 CHANNELS = {
     "premier": 1097335256287289374,
-    "all-Star": 1097335302609195048,
+    "all-star": 1097335302609195048,
     "challenger": 1097335280186433647,
     "prospect": 1025198171435049032,
     "OLD": 1025198171435049032
@@ -302,13 +302,11 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
             description=f"Ballchasing link must be valid and point to a replay.",
             color=0xFF0000
         )); return
-
-        league = league.capitalize()
         
         await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
             color=0xFF9179,
             title=f"{team_one_tag} vs. {team_two_tag} - Reported Match",
-            description=f"**{gamemode} {league} League - Week {week}**\n{who_won} with a score of **{score}**" \
+            description=f"**{gamemode} {league.capitalize()} League - Week {week}**\n{who_won} with a score of **{score}**" \
                 + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
         ).set_author(
             name=ctx.author.display_name,
@@ -385,14 +383,12 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
                 description=f"Ballchasing link must be valid and point to a replay.",
                 color=0xFF0000
             )); return
-
-        league = league.capitalize()
         
         if fftype == "single":
             await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
                 color=0xFF0000,
                 title=f"{team_one_tag} vs. {team_two_tag} - Reported Single Forfeit",
-                description=f"**{gamemode} {league} League - Week {week}**\n**{team_one_tag}** FF'd against **{team_two_tag}**" \
+                description=f"**{gamemode} {league.capitalize()} League - Week {week}**\n**{team_one_tag}** FF'd against **{team_two_tag}**" \
                     + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
             ).set_author(
                 name=ctx.author.display_name,
