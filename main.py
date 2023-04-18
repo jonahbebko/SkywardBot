@@ -23,10 +23,10 @@ USERALISES = {
     "ben": 902657099253825646
 }
 CHANNELS = {
-    "PREMIER": 1097335256287289374,
-    "ALLSTAR": 1097335302609195048,
-    "CHALLENGER": 1097335280186433647,
-    "PROSPECT": None,
+    "premier": 1097335256287289374,
+    "all-Star": 1097335302609195048,
+    "challenger": 1097335280186433647,
+    "prospect": 1025198171435049032,
     "OLD": 1025198171435049032
 }
 JONER = 424181104598056960
@@ -217,7 +217,6 @@ async def dm(ctx, anon, role, message):
                 f"`{e}, {anon}, {role}, {message}`",
             color=0xFF0000
         ))
-        await report_error(e, anon, role, message)
 
 @bot.slash_command(name="casterinfo", description="Sends a list of caster availability.")
 async def casterinfo(ctx):
@@ -265,7 +264,6 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
                     "League must be one of the following: `premier`, `all-star`, `challenger`, `prospect`",
                 color=0xFF0000
             )); return
-        league = league.capitalize()
 
         if gamemode not in ["2v2", "3v3"]:
             await ctx.respond(embed=discord.Embed(
@@ -305,7 +303,9 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
             color=0xFF0000
         )); return
 
-        await bot.get_channel(1025198171435049032).send(embed=discord.Embed(
+        league = league.capitalize()
+        
+        await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
             color=0xFF9179,
             title=f"{team_one_tag} vs. {team_two_tag} - Reported Match",
             description=f"**{gamemode} {league} League - Week {week}**\n{who_won} with a score of **{score}**" \
@@ -367,7 +367,6 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
                     "League must be one of the following: `premier`, `all-star`, `challenger`, `prospect`",
                 color=0xFF0000
             )); return
-        league = league.capitalize()
 
         if gamemode not in ["2v2", "3v3"]:
             await ctx.respond(embed=discord.Embed(
@@ -387,8 +386,10 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
                 color=0xFF0000
             )); return
 
+        league = league.capitalize()
+        
         if fftype == "single":
-            await bot.get_channel(1025198171435049032).send(embed=discord.Embed(
+            await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
                 color=0xFF0000,
                 title=f"{team_one_tag} vs. {team_two_tag} - Reported Single Forfeit",
                 description=f"**{gamemode} {league} League - Week {week}**\n**{team_one_tag}** FF'd against **{team_two_tag}**" \
@@ -399,7 +400,7 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
             ))
         
         elif fftype == "double":
-            await bot.get_channel(1025198171435049032).send(embed=discord.Embed(
+            await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
                 color=0xFF0000,
                 title=f"{team_one_tag} vs. {team_two_tag} - Reported Double Forfeit",
                 description=f"**{gamemode} {league} League - Week {week}**\n**{team_one_tag}** and **{team_two_tag}** double FF'd" \
