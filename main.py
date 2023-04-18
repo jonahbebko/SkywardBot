@@ -38,12 +38,6 @@ intents.members = True
 
 bot = discord.Bot(intents=intents)
 
-async def report_error(e, *args):
-    thang = """**Parameters**\n"""
-    for arg in args:
-        thang += (f"{arg}: " + str(type(arg)) + "\n")
-    await bot.get_user(JONER).send(f"SOMETHING WENT WRONG FUCKFACE\n{e}\n\n{thang}")
-
 @bot.event
 async def on_ready():
     print(f"{bot.user} is online")
@@ -154,10 +148,10 @@ async def bug(ctx, anon, message):
     except Exception as e:
         await ctx.respond(embed=discord.Embed(
             title="Error!",
-            description="Something went wrong!\nThe error has been logged and DM'd to Jonah.",
+            description="Something went wrong!\nPlease screenshot this message and open a ticket.\n\n" + \
+                f"`{e}, {anon}, {message}`",
             color=0xFF0000
         ))
-        await report_error(e, anon, message)
 
 @bot.slash_command(name="suggest", description="Suggest a new feature or improvement.", options=[
     discord.Option(name="anon", description="Whether to anonymously send your suggestion. (username and UID will be hidden)", choices=[
@@ -185,7 +179,6 @@ async def suggest(ctx, anon, message):
             description="Something went wrong!\nThe error has been logged and DM'd to Jonah.",
             color=0xFF0000
         ))
-        await report_error(e, anon, message)
 
 @bot.slash_command(name="dm", description="Sends a message in dms to everyone with the pinged role.", options=[
     discord.Option(name="anon", description="Whether to send the message anonymously.", choices=[
@@ -220,7 +213,8 @@ async def dm(ctx, anon, role, message):
     except Exception as e:
         await ctx.respond(embed=discord.Embed(
             title="Error!",
-            description="Something went wrong!\nThe error has been logged and DM'd to Jonah.",
+            description="Something went wrong!\nPlease screenshot this message and open a ticket.\n\n" + \
+                f"`{e}, {anon}, {role}, {message}`",
             color=0xFF0000
         ))
         await report_error(e, anon, role, message)
@@ -330,10 +324,10 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
     except Exception as e:
         await ctx.respond(embed=discord.Embed(
             title="Error!",
-            description="Something went wrong!\nThe error has been logged and DM'd to Jonah.",
+            description="Something went wrong!\nPlease screenshot this message and open a ticket.\n\n" + \
+                f"`{e}, {league}, {gamemode}, {week}, {team_one_tag}, {score}, {team_two_tag}, {ballchasing}`",
             color=0xFF0000
         ))
-        await report_error(e, league, gamemode, week, team_one_tag, score, team_two_tag, ballchasing)
 
 @bot.slash_command(name="forfeit", description="Used to report a forfeit, sends the info to a designated channel.", options=[
     discord.Option(name="league", description="League played.", options=[
@@ -431,10 +425,10 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
     except Exception as e:
         await ctx.respond(embed=discord.Embed(
             title="Error!",
-            description="Something went wrong!\nThe error has been logged and DM'd to Jonah.",
+            description="Something went wrong!\nPlease screenshot this message and open a ticket.\n\n" + \
+                f"`{e}, {league}, {gamemode}, {week}, {team_one_tag}, {team_two_tag}, {fftype}, {ballchasing}`",
             color=0xFF0000
         ))
-        await report_error(e, league, gamemode, week, team_one_tag, team_two_tag, fftype, ballchasing)
 
 try:
     open("token.txt").close()
