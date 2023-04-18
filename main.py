@@ -231,12 +231,12 @@ async def casterinfo(ctx):
         )); return
 
 @bot.slash_command(name="report", description="Used to report match, sends the info to a designated channel", options=[
-    discord.Option(name="league", description="League played.", required=True, options=[
+    discord.Option(name="league", description="League played.", options=[
         "premier", "all-star", "challenger", "prospect"
-    ]),
-    discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", required=True, options=[
+    ], required=True),
+    discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", options=[
         "2v2", "3v3"
-    ]),
+    ], required=True),
     discord.Option(name="week", description="Week of the match", input_type=int, required=True),
     discord.Option(name="team_one_tag", description="Tag of the first team", required=True),
     discord.Option(name="score", description="Score of the match", required=True),
