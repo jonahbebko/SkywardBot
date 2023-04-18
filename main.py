@@ -1,4 +1,5 @@
 import discord #py-cord, not discord.py
+import asyncio
 import traceback
 from datetime import datetime
 
@@ -59,6 +60,11 @@ async def on_message(ctx):
             user = bot.get_user(int(ctx.content.split()[1]))
         await user.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
+    # check if message is in a report channel
+    if ctx.channel.id in CHANNELS.values():
+        await ctx.channel.send("STOP TALKING IN REPORT CHANNELS")
+        await asyncio.sleep(1)
+        await ctx.delete()
     if "ratio" in ctx.content.lower():
         await ctx.add_reaction("⬆️")
 
