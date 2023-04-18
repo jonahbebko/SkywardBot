@@ -232,10 +232,14 @@ async def casterinfo(ctx):
 
 @bot.slash_command(name="report", description="Used to report match, sends the info to a designated channel", options=[
     discord.Option(name="league", description="League played.", options=[
-        "premier", "all-star", "challenger", "prospect"
+        discord.OptionChoice(name="Premier", value="premier"),
+        discord.OptionChoice(name="All-Star", value="all-star"),
+        discord.OptionChoice(name="Challenger", value="challenger"),
+        discord.OptionChoice(name="Prospect", value="prospect"),
     ], required=True),
     discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", options=[
-        "2v2", "3v3"
+        discord.OptionChoice(name="2v2", value="2v2"),
+        discord.OptionChoice(name="3v3", value="3v3")
     ], required=True),
     discord.Option(name="week", description="Week of the match", input_type=int, required=True),
     discord.Option(name="team_one_tag", description="Tag of the first team", required=True),
@@ -317,18 +321,22 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
         await error_embed(ctx, e, league, gamemode, week, team_one_tag, score, team_two_tag, ballchasing)
 
 @bot.slash_command(name="forfeit", description="Used to report a forfeit, sends the info to a designated channel.", options=[
-    discord.Option(name="league", description="League played", required=True, options=[
-        "premier", "all-star", "challenger", "prospect"
-    ]),
-    discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", required=True, options=[
-        "2v2", "3v3"
-    ]),
+    discord.Option(name="league", description="League played.", options=[
+        discord.OptionChoice(name="Premier", value="premier"),
+        discord.OptionChoice(name="All-Star", value="all-star"),
+        discord.OptionChoice(name="Challenger", value="challenger"),
+        discord.OptionChoice(name="Prospect", value="prospect"),
+    ], required=True),
+    discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", options=[
+        discord.OptionChoice(name="2v2", value="2v2"),
+        discord.OptionChoice(name="3v3", value="3v3")
+    ], required=True),
     discord.Option(name="week", description="Week of the match", input_type=int, required=True),
     discord.Option(name="team_one_tag", description="Tag of the first team (if single FF, this is the FFing team)",required=True),
     discord.Option(name="team_two_tag", description="Tag of the second team", required=True),
     discord.Option(name="fftype", description="Type of forfeit", required=True, options=[
-        "single",
-        "double"
+        discord.OptionChoice(name="Single Forfeit", value="single"),
+        discord.OptionChoice(name="Double Forfeit", value="double")
     ]),
     discord.Option(name="ballchasing", description="Ballchasing link (optional)", required=False)
 ])
