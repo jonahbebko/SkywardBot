@@ -1,4 +1,5 @@
 import discord #py-cord, not discord.py
+import traceback
 from datetime import datetime
 
 LOG="""Last updated: April 17, 2023
@@ -176,7 +177,9 @@ async def suggest(ctx, anon, message):
     except Exception as e:
         await ctx.respond(embed=discord.Embed(
             title="Error!",
-            description="Something went wrong!\nThe error has been logged and DM'd to Jonah.",
+            description="Something went wrong!\nPlease screenshot this message and open a ticket.\n\n" + \
+                f"`{e}, {anon}, {message}`\n" + \
+                f"`{traceback.format_exc()}`",
             color=0xFF0000
         ))
 
@@ -323,7 +326,8 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
         await ctx.respond(embed=discord.Embed(
             title="Error!",
             description="Something went wrong!\nPlease screenshot this message and open a ticket.\n\n" + \
-                f"`{e}, {league}, {gamemode}, {week}, {team_one_tag}, {score}, {team_two_tag}, {ballchasing}`",
+                f"`{e}, {league}, {gamemode}, {week}, {team_one_tag}, {score}, {team_two_tag}, {ballchasing}`\n" + \
+                f"`{traceback.format_exc()}`",
             color=0xFF0000
         ))
 
@@ -423,8 +427,8 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
         await ctx.respond(embed=discord.Embed(
             title="Error!",
             description="Something went wrong!\nPlease screenshot this message and open a ticket.\n\n" + \
-                f"`{e}, {league}, {gamemode}, {week}, {team_one_tag}, {team_two_tag}, {fftype}, {ballchasing}`",
-            color=0xFF0000
+                f"`{e}, {league}, {gamemode}, {week}, {team_one_tag}, {team_two_tag}, {fftype}, {ballchasing}`" + \
+                f"`{traceback.format_exc()}`",
         ))
 
 try:
