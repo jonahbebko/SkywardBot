@@ -1,9 +1,10 @@
 import discord #py-cord, not discord.py
 from datetime import datetime
 
-LOG="""Last updated: February 23, 2023
-- Fixed broken capitalization calls, took the bot down
-- Better error handling: bot will now DM Jonah when something goes wrong
+LOG="""Last updated: April 17, 2023
+- Much better error handling
+- Reports go to individual channels based on league
+- Reacts with ⬆️ if anyone says "ratio"
 """
 
 ROLES = {
@@ -21,8 +22,17 @@ USERALISES = {
     "flip": 348915482356744197,
     "ben": 902657099253825646
 }
+CHANNELS = {
+    "PREMIER": 1097335256287289374,
+    "ALLSTAR": 1097335302609195048,
+    "CHALLENGER": 1097335280186433647,
+    "PROSPECT": None,
+    "OLD": 1025198171435049032
+}
+JONER = 424181104598056960
 
 intents = discord.Intents.default()
+intents.presences = True
 intents.message_content = True
 intents.members = True
 
@@ -34,13 +44,10 @@ async def error_embed(ctx, e, *args):
         description="Something went wrong!\nThe error has been logged and DM'd to Jonah.",
         color=0xFF0000
     ))
-    server = bot.get_guild(991005374314328124)
     thang = """**Parameters**\n"""
     for arg in args:
         thang += (f"{arg}: " + str(type(arg)) + "\n")
-    for member in server.members:
-        if ROLES["dev"] in [role.id for role in member.roles]:
-            await member.send(f"SOMETHING WENT WRONG FUCKFACE\n{e}\n\n{thang}")
+    await bot.get_user(JONER).send(f"SOMETHING WENT WRONG FUCKFACE\n{e}\n\n{thang}")
 
 @bot.event
 async def on_ready():
@@ -139,19 +146,16 @@ async def log(ctx):
 async def bug(ctx, anon, message):
     try:
         await ctx.respond("Bug reported! Thanks for your help.")
-        server = bot.get_guild(991005374314328124)
         if anon == "anonymous":
             desc = f"**User:** {ctx.author} ({ctx.author.id})\n**Message:** {message}"
         else:
             desc = f"*Anonymous report.*\n**Message:** {message}"
-        for member in server.members:
-            if ROLES["dev"] in [role.id for role in member.roles]:
-                await member.send(embed=discord.Embed(
-                    title="SkywardBot - Bug Report",
-                    description=desc,
-                    color=0xFF0000
-                    )
-                )
+        await bot.get_user(JONER).send(embed=discord.Embed(
+            title="SkywardBot - Bug Report",
+            description=desc,
+            color=0xFF0000
+            )
+        )
     except Exception as e:
         await error_embed(ctx, e, anon, message)
 
@@ -165,19 +169,16 @@ async def bug(ctx, anon, message):
 async def suggest(ctx, anon, message):
     try:
         await ctx.respond("Suggestion sent! Thanks for your help.")
-        server = bot.get_guild(991005374314328124)
         if anon == "anonymous":
             desc = f"**User:** {ctx.author} ({ctx.author.id})\n**Message:** {message}"
         else:
             desc = f"*Anonymous report.*\n**Message:** {message}"
-        for member in server.members:
-            if ROLES["dev"] in [role.id for role in member.roles]:
-                await member.send(embed=discord.Embed(
-                    title="SkywardBot - Suggestion",
-                    description=desc,
-                    color=0xFF9179
-                    )
-                )
+        await bot.get_user(JONER).send(embed=discord.Embed(
+            title="SkywardBot - Suggestion",
+            description=desc,
+            color=0xFF9179
+            )
+        )
     except Exception as e:
         await error_embed(ctx, e, anon, message)
 
@@ -186,7 +187,7 @@ async def suggest(ctx, anon, message):
         "anonymous",
         "not anonymous"
     ], required=True),
-    discord.Option(name="role", description="The role to send the message to.", input_type=discord.Role, required=True),
+    discord.Option(name="role", description="The role to send the message to.", type=discord.Role, required=True),
     discord.Option(name="message", description="The message to send.", required=True)
 ])
 async def dm(ctx, anon, role, message):
