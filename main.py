@@ -130,32 +130,24 @@ async def log(ctx):
     await ctx.respond(embed=discord.Embed(title="SkywardBot - Log", description=LOG, color=0xFF9179))
 
 @bot.slash_command(name="bug", description="Report a bug to joner himself.", options=[
-    discord.Option(name="anon", description="Whether to anonymously report your bug. (username and UID will be hidden)", options=[
+    discord.Option(name="anon", description="Whether to anonymously report your bug. (username and UID will be hidden)", choices=[
         "anonymous",
         "not anonymous"
     ], required=True),
     discord.Option(name="message", description="The bug you encountered.", required=True)
 ])
 async def bug(ctx, anon, message):
-    try:
-        await ctx.respond("Bug reported! Thanks for your help.")
-        if anon == "anonymous":
-            desc = f"**User:** {ctx.author} ({ctx.author.id})\n**Message:** {message}"
-        else:
-            desc = f"*Anonymous report.*\n**Message:** {message}"
-        await bot.get_user(JONER).send(embed=discord.Embed(
-            title="SkywardBot - Bug Report",
-            description=desc,
-            color=0xFF0000
-            )
+    await ctx.respond("Bug reported! Thanks for your help.")
+    if anon == "anonymous":
+        desc = f"**User:** {ctx.author} ({ctx.author.id})\n**Message:** {message}"
+    else:
+        desc = f"*Anonymous report.*\n**Message:** {message}"
+    await bot.get_user(JONER).send(embed=discord.Embed(
+        title="SkywardBot - Bug Report",
+        description=desc,
+        color=0xFF0000
         )
-    except Exception as e:
-        await ctx.respond(embed=discord.Embed(
-            title="Error!",
-            description="Something went wrong!\nPlease screenshot this message and open a ticket.\n\n" + \
-                f"`{e}, {anon}, {message}`",
-            color=0xFF0000
-        ))
+    )
 
 @bot.slash_command(name="suggest", description="Suggest a new feature or improvement.", options=[
     discord.Option(name="anon", description="Whether to anonymously send your suggestion. (username and UID will be hidden)", choices=[
@@ -165,26 +157,17 @@ async def bug(ctx, anon, message):
     discord.Option(name="message", description="The suggestion you want to provide.", required=True)
 ])
 async def suggest(ctx, anon, message):
-    try:
-        await ctx.respond("Suggestion sent! Thanks for your help.")
-        if anon == "anonymous":
-            desc = f"**User:** {ctx.author} ({ctx.author.id})\n**Message:** {message}"
-        else:
-            desc = f"*Anonymous report.*\n**Message:** {message}"
-        await bot.get_user(JONER).send(embed=discord.Embed(
-            title="SkywardBot - Suggestion",
-            description=desc,
-            color=0xFF9179
-            )
+    await ctx.respond("Suggestion sent! Thanks for your help.")
+    if anon == "anonymous":
+        desc = f"**User:** {ctx.author} ({ctx.author.id})\n**Message:** {message}"
+    else:
+        desc = f"*Anonymous report.*\n**Message:** {message}"
+    await bot.get_user(JONER).send(embed=discord.Embed(
+        title="SkywardBot - Suggestion",
+        description=desc,
+        color=0xFF9179
         )
-    except Exception as e:
-        await ctx.respond(embed=discord.Embed(
-            title="Error!",
-            description="Something went wrong!\nPlease screenshot this message and open a ticket.\n\n" + \
-                f"`{e}, {anon}, {message}`\n" + \
-                f"`{traceback.format_exc()}`",
-            color=0xFF0000
-        ))
+    )
 
 @bot.slash_command(name="dm", description="Sends a message in dms to everyone with the pinged role.", options=[
     discord.Option(name="anon", description="Whether to send the message anonymously.", choices=[
@@ -195,34 +178,26 @@ async def suggest(ctx, anon, message):
     discord.Option(name="message", description="The message to send.", required=True)
 ])
 async def dm(ctx, anon, role, message):
-    try:
-        if ctx.author.guild_permissions.administrator:
-            await ctx.respond(f"Anonymity: {anon}\nSending message to all members with role **\"{role}\"** (ID: {role.id})...")
-            if anon == "anonymous": a = "Anonymous"
-            else: a = ctx.author
-            # send message to all members with role
-            for member in role.members:
-                await member.send(embed=discord.Embed(
-                    title="SkywardBot - Message",
-                    description=f"**{a}** says:\n{message}",
-                    color=0xFF9179
-                    )
-                )
-            await ctx.send("Sent.")
-        else:
-            await ctx.respond(embed=discord.Embed(
-                title="SkywardBot - Error",
-                description="You must be an administrator to use this command.",
-                color=0xFF0000
+    if ctx.author.guild_permissions.administrator:
+        await ctx.respond(f"Anonymity: {anon}\nSending message to all members with role **\"{role}\"** (ID: {role.id})...")
+        if anon == "anonymous": a = "Anonymous"
+        else: a = ctx.author
+        # send message to all members with role
+        for member in role.members:
+            await member.send(embed=discord.Embed(
+                title="SkywardBot - Message",
+                description=f"**{a}** says:\n{message}",
+                color=0xFF9179
                 )
             )
-    except Exception as e:
+        await ctx.send("Sent.")
+    else:
         await ctx.respond(embed=discord.Embed(
-            title="Error!",
-            description="Something went wrong!\nPlease screenshot this message and open a ticket.\n\n" + \
-                f"`{e}, {anon}, {role}, {message}`",
+            title="SkywardBot - Error",
+            description="You must be an administrator to use this command.",
             color=0xFF0000
-        ))
+            )
+        )
 
 @bot.slash_command(name="casterinfo", description="Sends a list of caster availability.")
 async def casterinfo(ctx):
@@ -240,17 +215,17 @@ async def casterinfo(ctx):
         )); return
 
 @bot.slash_command(name="report", description="Used to report match, sends the info to a designated channel", options=[
-    discord.Option(name="league", description="League played.", options=[
+    discord.Option(name="league", description="League played.", choices=[
         discord.OptionChoice(name="Premier", value="premier"),
         discord.OptionChoice(name="All-Star", value="all-star"),
         discord.OptionChoice(name="Challenger", value="challenger"),
         discord.OptionChoice(name="Prospect", value="prospect"),
     ], required=True),
-    discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", options=[
+    discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", choices=[
         discord.OptionChoice(name="2v2", value="2v2"),
         discord.OptionChoice(name="3v3", value="3v3")
     ], required=True),
-    discord.Option(name="week", description="Week of the match", input_type=int, required=True),
+    discord.Option(int, name="week", description="Week of the match (set to 0 for playoffs)", required=True, min_value=0, max_value=10),
     discord.Option(name="team_one_tag", description="Tag of the first team", required=True),
     discord.Option(name="score", description="Score of the match", required=True),
     discord.Option(name="team_two_tag", description="Tag of the second team", required=True),
@@ -258,97 +233,86 @@ async def casterinfo(ctx):
 ])
 async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag, ballchasing=None):
 
-    try:
-
-        if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
-            await ctx.respond("This is a DMs-only command."); return
-        
-        if league.lower() not in ["premier", "all-star", "challenger", "prospect"]:
-            await ctx.respond(embed=discord.Embed(
-                title="SkywardBot - Error",
-                description=f"**Error** in parameter `league`, given '{league}'\n" + \
-                    "League must be one of the following: `premier`, `all-star`, `challenger`, `prospect`",
-                color=0xFF0000
-            )); return
-
-        if gamemode not in ["2v2", "3v3"]:
-            await ctx.respond(embed=discord.Embed(
-                title="SkywardBot - Error",
-                description=f"**Error** in parameter `gamemode`, given '{gamemode}'\n" + \
-                    "Gamemode must be one of the following: `2v2`, `3v3`",
-                color=0xFF0000
-            )); return
-
-        try: int(week)
-        except: await ctx.respond(embed=discord.Embed(
-            title="SkywardBot - Error",
-            description=f"**Error** in parameter `week`, given '{week}'\nWeek must be a number.",
-            color=0xFF0000
-        )); return
-
-        try: int(score.split("-")[0])
-        except: await ctx.respond(embed=discord.Embed(
-            title="SkywardBot - Error",
-            description=f"**Error** in parameter `score`, given '{score}'\nScore must be in the format `a-b` where `a` and `b` are both positive integers.",
-            color=0xFF0000
-        )); return
-        
-        temp = [int(i) for i in score.split("-")]
-
-        if temp[0] > temp[1]:
-            who_won = f"**{team_one_tag}** won against **{team_two_tag}**"
-        elif temp[0] < temp[1]:
-            who_won = f"**{team_one_tag}** lost to **{team_two_tag}**"
-        else:
-            who_won = f"**{team_one_tag}** and **{team_two_tag}** tied"
-
-        if ("ballchasing.com/" not in str(ballchasing)) and (ballchasing != None):
-            await ctx.respond(embed=discord.Embed(
-            title="SkywardBot - Error",
-            description=f"Ballchasing link must be valid and point to a replay.",
-            color=0xFF0000
-        )); return
-        
-        await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
-            color=0xFF9179,
-            title=f"{team_one_tag} vs. {team_two_tag} - Reported Match",
-            description=f"**{gamemode} {league.capitalize()} League - Week {week}**\n{who_won} with a score of **{score}**" \
-                + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
-        ).set_author(
-            name=ctx.author.display_name,
-            icon_url=ctx.author.display_avatar
-        ))
-
+    if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
+        await ctx.respond("This is a DMs-only command."); return
+    
+    if league.lower() not in ["premier", "all-star", "challenger", "prospect"]:
         await ctx.respond(embed=discord.Embed(
-            title="SkywardBot - Info",
-            description="Report sent.",
-            color=0xFF9179
-        ))
-
-    except Exception as e:
-        await ctx.respond(embed=discord.Embed(
-            title="Error!",
-            description="Something went wrong!\nPlease screenshot this message and open a ticket.\n\n" + \
-                f"`{e}, {league}, {gamemode}, {week}, {team_one_tag}, {score}, {team_two_tag}, {ballchasing}`\n" + \
-                f"`{traceback.format_exc()}`",
+            title="SkywardBot - Error",
+            description=f"**Error** in parameter `league`, given '{league}'\n" + \
+                "League must be one of the following: `premier`, `all-star`, `challenger`, `prospect`",
             color=0xFF0000
-        ))
+        )); return
+
+    if gamemode not in ["2v2", "3v3"]:
+        await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Error",
+            description=f"**Error** in parameter `gamemode`, given '{gamemode}'\n" + \
+                "Gamemode must be one of the following: `2v2`, `3v3`",
+            color=0xFF0000
+        )); return
+
+    try: int(week)
+    except: await ctx.respond(embed=discord.Embed(
+        title="SkywardBot - Error",
+        description=f"**Error** in parameter `week`, given '{week}'\nWeek must be a number.",
+        color=0xFF0000
+    )); return
+
+    try: int(score.split("-")[0])
+    except: await ctx.respond(embed=discord.Embed(
+        title="SkywardBot - Error",
+        description=f"**Error** in parameter `score`, given '{score}'\nScore must be in the format `a-b` where `a` and `b` are both positive integers.",
+        color=0xFF0000
+    )); return
+    
+    temp = [int(i) for i in score.split("-")]
+
+    if temp[0] > temp[1]:
+        who_won = f"**{team_one_tag}** won against **{team_two_tag}**"
+    elif temp[0] < temp[1]:
+        who_won = f"**{team_one_tag}** lost to **{team_two_tag}**"
+    else:
+        who_won = f"**{team_one_tag}** and **{team_two_tag}** tied"
+
+    if ("ballchasing.com/" not in str(ballchasing)) and (ballchasing != None):
+        await ctx.respond(embed=discord.Embed(
+        title="SkywardBot - Error",
+        description=f"Ballchasing link must be valid and point to a replay.",
+        color=0xFF0000
+    )); return
+    
+    await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
+        color=0xFF9179,
+        title=f"{team_one_tag} vs. {team_two_tag} - Reported Match",
+        description=f"**{gamemode} {league.capitalize()} League - Week {week}**\n{who_won} with a score of **{score}**" \
+            + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
+    ).set_author(
+        name=ctx.author.display_name,
+        icon_url=ctx.author.display_avatar
+    ))
+
+    await ctx.respond(embed=discord.Embed(
+        title="SkywardBot - Info",
+        description="Report sent.",
+        color=0xFF9179
+    ))
 
 @bot.slash_command(name="forfeit", description="Used to report a forfeit, sends the info to a designated channel.", options=[
-    discord.Option(name="league", description="League played.", options=[
+    discord.Option(name="league", description="League played.", choices=[
         discord.OptionChoice(name="Premier", value="premier"),
         discord.OptionChoice(name="All-Star", value="all-star"),
         discord.OptionChoice(name="Challenger", value="challenger"),
         discord.OptionChoice(name="Prospect", value="prospect"),
     ], required=True),
-    discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", options=[
+    discord.Option(name="gamemode", description="2v2 or 3v3 gamemode", choices=[
         discord.OptionChoice(name="2v2", value="2v2"),
         discord.OptionChoice(name="3v3", value="3v3")
     ], required=True),
-    discord.Option(name="week", description="Week of the match", input_type=int, required=True),
+    discord.Option(int, name="week", description="Week of the match (set to 0 for playoffs)", required=True, min_value=0, max_value=10),
     discord.Option(name="team_one_tag", description="Tag of the first team (if single FF, this is the FFing team)",required=True),
     discord.Option(name="team_two_tag", description="Tag of the second team", required=True),
-    discord.Option(name="fftype", description="Type of forfeit", required=True, options=[
+    discord.Option(name="fftype", description="Type of forfeit", required=True, choices=[
         discord.OptionChoice(name="Single Forfeit", value="single"),
         discord.OptionChoice(name="Double Forfeit", value="double")
     ]),
@@ -356,83 +320,73 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
 ])
 async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftype, ballchasing=None):
 
-    try:
-
-        if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
-            await ctx.respond(embed=discord.Embed(
-                title="SkywardBot - Error",
-                description="This is a DMs-only command.",
-                color=0xFF0000
-            )); return
-
-        if league.lower() not in ["premier", "all-star", "challenger", "prospect"]:
-            await ctx.respond(embed=discord.Embed(
-                title="SkywardBot - Error",
-                description=f"**Error** in parameter `league`, given '{league}'\n" + \
-                    "League must be one of the following: `premier`, `all-star`, `challenger`, `prospect`",
-                color=0xFF0000
-            )); return
-
-        if gamemode not in ["2v2", "3v3"]:
-            await ctx.respond(embed=discord.Embed(
-                title="SkywardBot - Error",
-                description=f"**Error** in parameter `gamemode`, given '{gamemode}'\n" + \
-                    "Gamemode must be one of the following: `2v2`, `3v3`",
-                color=0xFF0000
-            )); return
-
-        try: int(week)
-        except: await ctx.respond(f"**Error** in parameter `week`, given '{week}'\nWeek must be a number."); return
-
-        if ("ballchasing.com/" not in str(ballchasing)) and (ballchasing != None):
-                await ctx.respond(embed=discord.Embed(
-                title="SkywardBot - Error",
-                description=f"Ballchasing link must be valid and point to a replay.",
-                color=0xFF0000
-            )); return
-        
-        if fftype == "single":
-            await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
-                color=0xFF0000,
-                title=f"{team_one_tag} vs. {team_two_tag} - Reported Single Forfeit",
-                description=f"**{gamemode} {league.capitalize()} League - Week {week}**\n**{team_one_tag}** FF'd against **{team_two_tag}**" \
-                    + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
-            ).set_author(
-                name=ctx.author.display_name,
-                icon_url=ctx.author.display_avatar
-            ))
-        
-        elif fftype == "double":
-            await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
-                color=0xFF0000,
-                title=f"{team_one_tag} vs. {team_two_tag} - Reported Double Forfeit",
-                description=f"**{gamemode} {league} League - Week {week}**\n**{team_one_tag}** and **{team_two_tag}** double FF'd" \
-                    + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
-            ).set_author(
-                name=ctx.author.display_name,
-                icon_url=ctx.author.display_avatar
-            ))
-        
-        else:
-            await ctx.respond(embed=discord.Embed(
-                title="SkywardBot - Error",
-                description=f"**Error** in parameter `type`, given '{fftype}'\nType must be either 'single' or 'double'.",
-                color=0xFF0000
-            )); return
-
+    if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
         await ctx.respond(embed=discord.Embed(
-            title="SkywardBot - Info",
-            description="Report sent.",
-            color=0xFF9179
+            title="SkywardBot - Error",
+            description="This is a DMs-only command.",
+            color=0xFF0000
+        )); return
+
+    if league.lower() not in ["premier", "all-star", "challenger", "prospect"]:
+        await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Error",
+            description=f"**Error** in parameter `league`, given '{league}'\n" + \
+                "League must be one of the following: `premier`, `all-star`, `challenger`, `prospect`",
+            color=0xFF0000
+        )); return
+
+    if gamemode not in ["2v2", "3v3"]:
+        await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Error",
+            description=f"**Error** in parameter `gamemode`, given '{gamemode}'\n" + \
+                "Gamemode must be one of the following: `2v2`, `3v3`",
+            color=0xFF0000
+        )); return
+
+    try: int(week)
+    except: await ctx.respond(f"**Error** in parameter `week`, given '{week}'\nWeek must be a number."); return
+
+    if ("ballchasing.com/" not in str(ballchasing)) and (ballchasing != None):
+            await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Error",
+            description=f"Ballchasing link must be valid and point to a replay.",
+            color=0xFF0000
+        )); return
+    
+    if fftype == "single":
+        await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
+            color=0xFF0000,
+            title=f"{team_one_tag} vs. {team_two_tag} - Reported Single Forfeit",
+            description=f"**{gamemode} {league.capitalize()} League - Week {week}**\n**{team_one_tag}** FF'd against **{team_two_tag}**" \
+                + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
+        ).set_author(
+            name=ctx.author.display_name,
+            icon_url=ctx.author.display_avatar
         ))
     
-    except Exception as e:
-        await ctx.respond(embed=discord.Embed(
-            title="Error!",
-            description="Something went wrong!\nPlease screenshot this message and open a ticket.\n\n" + \
-                f"`{e}, {league}, {gamemode}, {week}, {team_one_tag}, {team_two_tag}, {fftype}, {ballchasing}`" + \
-                f"`{traceback.format_exc()}`",
+    elif fftype == "double":
+        await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
+            color=0xFF0000,
+            title=f"{team_one_tag} vs. {team_two_tag} - Reported Double Forfeit",
+            description=f"**{gamemode} {league} League - Week {week}**\n**{team_one_tag}** and **{team_two_tag}** double FF'd" \
+                + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
+        ).set_author(
+            name=ctx.author.display_name,
+            icon_url=ctx.author.display_avatar
         ))
+    
+    else:
+        await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Error",
+            description=f"**Error** in parameter `type`, given '{fftype}'\nType must be either 'single' or 'double'.",
+            color=0xFF0000
+        )); return
+
+    await ctx.respond(embed=discord.Embed(
+        title="SkywardBot - Info",
+        description="Report sent.",
+        color=0xFF9179
+    ))
 
 try:
     open("token.txt").close()
