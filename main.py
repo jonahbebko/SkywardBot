@@ -64,7 +64,7 @@ async def on_message(ctx):
     if ctx.channel.id in CHANNELS.values():
         await ctx.channel.send("STOP TALKING IN REPORT CHANNELS")
         await asyncio.sleep(1)
-        await ctx.delete()
+        await ctx.channel.history(limit=1).delete()
     if "ratio" in ctx.content.lower():
         await ctx.add_reaction("⬆️")
 
