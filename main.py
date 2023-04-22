@@ -2,10 +2,8 @@ import discord #py-cord, not discord.py
 import traceback
 from datetime import datetime
 
-LOG="""Last updated: April 17, 2023
-- Much better error handling
-- Reports go to individual channels based on league
-- Reacts with ⬆️ if anyone says "ratio"
+LOG="""Last updated: April 21, 2023
+- WC, QF, SF, and GF are now valid options for weeks.
 """
 
 ROLES = {
@@ -59,9 +57,6 @@ async def on_message(ctx):
             user = bot.get_user(int(ctx.content.split()[1]))
         await user.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
-    # check if message is in a report channel
-    if ctx.channel.id in CHANNELS.values():
-        await ctx.channel.send("STOP TALKING IN REPORT CHANNELS", delete_after=1)
     if "ratio" in ctx.content.lower():
         await ctx.add_reaction("⬆️")
 
@@ -225,7 +220,7 @@ async def casterinfo(ctx):
         discord.OptionChoice(name="2v2", value="2v2"),
         discord.OptionChoice(name="3v3", value="3v3")
     ], required=True),
-    discord.Option(int, name="week", description="Week of the match (set to 0 for playoffs)", required=True, min_value=0, max_value=10),
+    discord.Option(name="week", description="Week of the match", required=True),
     discord.Option(name="team_one_tag", description="Tag of the first team", required=True),
     discord.Option(name="score", description="Score of the match", required=True),
     discord.Option(name="team_two_tag", description="Tag of the second team", required=True),
@@ -252,10 +247,10 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
             color=0xFF0000
         )); return
 
-    try: int(week)
-    except: await ctx.respond(embed=discord.Embed(
+    if type(week) != int or week not in ["WC", "QF", "SF", "GF"]:
+        await ctx.respond(embed=discord.Embed(
         title="SkywardBot - Error",
-        description=f"**Error** in parameter `week`, given '{week}'\nWeek must be a number.",
+        description=f"**Error** in parameter `week`, given '{week}'\nWeek must be a number or valid playoff abbreviation.",
         color=0xFF0000
     )); return
 
@@ -343,8 +338,12 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
             color=0xFF0000
         )); return
 
-    try: int(week)
-    except: await ctx.respond(f"**Error** in parameter `week`, given '{week}'\nWeek must be a number."); return
+    if type(week) != int or week not in ["WC", "QF", "SF", "GF"]:
+        await ctx.respond(embed=discord.Embed(
+        title="SkywardBot - Error",
+        description=f"**Error** in parameter `week`, given '{week}'\nWeek must be a number or valid playoff abbreviation.",
+        color=0xFF0000
+    )); return
 
     if ("ballchasing.com/" not in str(ballchasing)) and (ballchasing != None):
             await ctx.respond(embed=discord.Embed(
