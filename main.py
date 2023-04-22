@@ -247,7 +247,7 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
             color=0xFF0000
         )); return
 
-    if type(week) != int or week not in ["WC", "QF", "SF", "GF"]:
+    if (type(week) != int) and (week not in ["WC", "QF", "SF", "GF"]):
         await ctx.respond(embed=discord.Embed(
         title="SkywardBot - Error",
         description=f"**Error** in parameter `week`, given '{week}'\nWeek must be a number or valid playoff abbreviation.",
@@ -338,7 +338,7 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
             color=0xFF0000
         )); return
 
-    if type(week) != int or week not in ["WC", "QF", "SF", "GF"]:
+    if (type(week) != int) and (week not in ["WC", "QF", "SF", "GF"]):
         await ctx.respond(embed=discord.Embed(
         title="SkywardBot - Error",
         description=f"**Error** in parameter `week`, given '{week}'\nWeek must be a number or valid playoff abbreviation.",
