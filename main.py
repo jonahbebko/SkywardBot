@@ -304,7 +304,7 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
         discord.OptionChoice(name="2v2", value="2v2"),
         discord.OptionChoice(name="3v3", value="3v3")
     ], required=True),
-    discord.Option(int, name="week", description="Week of the match (set to 0 for playoffs)", required=True, min_value=0, max_value=10),
+    discord.Option(name="week", description="Week of the match (set to 0 for playoffs)", required=True),
     discord.Option(name="team_one_tag", description="Tag of the first team (if single FF, this is the FFing team)",required=True),
     discord.Option(name="team_two_tag", description="Tag of the second team", required=True),
     discord.Option(name="fftype", description="Type of forfeit", required=True, choices=[
