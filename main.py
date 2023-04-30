@@ -1,9 +1,9 @@
 import discord #py-cord, not discord.py
-import traceback
 from datetime import datetime
+from random import randint
 
-LOG="""Last updated: April 21, 2023
-- WC, QF, SF, and GF are now valid options for weeks.
+LOG="""Last updated: April 30, 2023
+- Bot will flip a coin upon seeing "ratio" to decide the ratio's validity.
 """
 
 ROLES = {
@@ -58,7 +58,10 @@ async def on_message(ctx):
         await user.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
     if "ratio" in ctx.content.lower():
-        await ctx.add_reaction("⬆️")
+        if randint(0, 1):
+            await ctx.add_reaction("⬆️")
+        else:
+            await ctx.add_reaction("⬇️")
 
 @bot.event
 async def on_member_join(member):
