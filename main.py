@@ -1,9 +1,10 @@
 import discord #py-cord, not discord.py
 from datetime import datetime
 from random import randint
+from table2ascii import table2ascii as t2a, PresetStyle
 
-LOG="""Last updated: April 30, 2023
-- Bot will flip a coin upon seeing "ratio" to decide the ratio's validity.
+LOG="""Last updated: May 25, 2023
+- /forfeit no longer has a ballchasing option because that makes zero sense
 """
 
 ROLES = {
@@ -83,7 +84,7 @@ async def help(ctx):
 
 **Match Reporting** (Captains and DMs only)
 `/report <league> <gamemode> <week> <ID> <score-score> <ID> [ballchasing]` - Report a match.
-`/forfeit <league> <gamemode> <week> <ID> <ID> <type> [ballchasing]` - Report a forfeit.
+`/forfeit <league> <gamemode> <week> <ID> <ID> <type>` - Report a forfeit.
 
 **Misc**
 `/flipout` - flipout
@@ -279,21 +280,67 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
         description=f"Ballchasing link must be valid and point to a replay.",
         color=0xFF0000
     )); return
+
+    output = ""
+
+    if not ballchasing:
+
+        await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Stats (beta)",
+            description="Since no ballchasing link was provided, you must enter player stats manually.\n" + \
+                "Please enter comma-separated values for statistics, one entry for each player.\n\n" + \
+                "**Each entry should be in the format:**\n`playername,score,shots,goals,assists,saves",
+            color=0xFF9179
+        ))
+
+        num: int = 1
+        stats: list = []
+
+        while True:
+
+            await ctx.send(f"Please send player #{num} stats, or send 'done' to finish.")
+            message = await bot.wait_for("message", check=lambda m: m.author == ctx.author and m.channel == ctx.channel)
+
+            if message.content.lower() == "done":
+                break
+                
+            num += 1
+
+            try:
+                stats.append(message.content.split(","))
+            except:
+                await ctx.send("Error occured in parsing stats. Please try again, or manually report match.")
+
+        output = t2a(
+            header=["Player", "Score", "Shots", "Goals", "Shooting %", "Assists", "Saves"],
+            body=[
+                [i[0], i[1], i[2], i[3], str(round(int(i[3])/int(i[2]), 2)*100)+"%", i[4], i[5]] for i in stats
+            ],
+            first_col_heading=True
+        )
+
+        await ctx.send(embed=discord.Embed(
+            title="SkywardBot - Info",
+            description="Report sent.",
+            color=0xFF9179
+        ))
+
+    else:
+        await ctx.respond(embed=discord.Embed(
+            title="SkywardBot - Info",
+            description="Report sent.",
+            color=0xFF9179
+        ))
     
     await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
         color=0xFF9179,
         title=f"{team_one_tag} vs. {team_two_tag} - Reported Match",
         description=f"**{gamemode} {league.capitalize()} League - Week {week}**\n{who_won} with a score of **{score}**" \
-            + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
+            + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "") \
+            + (f"\n\n```\n{output}\n```" if output else "")
     ).set_author(
         name=ctx.author.display_name,
         icon_url=ctx.author.display_avatar
-    ))
-
-    await ctx.respond(embed=discord.Embed(
-        title="SkywardBot - Info",
-        description="Report sent.",
-        color=0xFF9179
     ))
 
 @bot.slash_command(name="forfeit", description="Used to report a forfeit, sends the info to a designated channel.", options=[
@@ -313,10 +360,9 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
     discord.Option(name="fftype", description="Type of forfeit", required=True, choices=[
         discord.OptionChoice(name="Single Forfeit", value="single"),
         discord.OptionChoice(name="Double Forfeit", value="double")
-    ]),
-    discord.Option(name="ballchasing", description="Ballchasing link (optional)", required=False)
+    ])
 ])
-async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftype, ballchasing=None):
+async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftype):
 
     if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
         await ctx.respond(embed=discord.Embed(
@@ -347,20 +393,12 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
         description=f"**Error** in parameter `week`, given '{week}'\nWeek must be a number or valid playoff abbreviation.",
         color=0xFF0000
     )); return
-
-    if ("ballchasing.com/" not in str(ballchasing)) and (ballchasing != None):
-            await ctx.respond(embed=discord.Embed(
-            title="SkywardBot - Error",
-            description=f"Ballchasing link must be valid and point to a replay.",
-            color=0xFF0000
-        )); return
     
     if fftype == "single":
         await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
             color=0xFF0000,
             title=f"{team_one_tag} vs. {team_two_tag} - Reported Single Forfeit",
-            description=f"**{gamemode} {league.capitalize()} League - Week {week}**\n**{team_one_tag}** FF'd against **{team_two_tag}**" \
-                + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
+            description=f"**{gamemode} {league.capitalize()} League - Week {week}**\n**{team_one_tag}** FF'd against **{team_two_tag}**"
         ).set_author(
             name=ctx.author.display_name,
             icon_url=ctx.author.display_avatar
@@ -370,8 +408,7 @@ async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftyp
         await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
             color=0xFF0000,
             title=f"{team_one_tag} vs. {team_two_tag} - Reported Double Forfeit",
-            description=f"**{gamemode} {league} League - Week {week}**\n**{team_one_tag}** and **{team_two_tag}** double FF'd" \
-                + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
+            description=f"**{gamemode} {league} League - Week {week}**\n**{team_one_tag}** and **{team_two_tag}** double FF'd"
         ).set_author(
             name=ctx.author.display_name,
             icon_url=ctx.author.display_avatar
