@@ -289,7 +289,8 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
             title="SkywardBot - Stats (beta)",
             description="Since no ballchasing link was provided, you must enter player stats manually.\n" + \
                 "Please enter comma-separated values for statistics, one entry for each player.\n\n" + \
-                "**Each entry should be in the format:**\n`playername,score,shots,goals,assists,saves",
+                "**Each entry should be in the format:**\n```playername,score,shots,goals,assists,saves```\n\n" + \
+                "Or, you may put all entries into one message:\n```player1,score,shots,goals,assists,saves\nplayer2,score,shots,goals,assists,saves\n...```",
             color=0xFF9179
         ))
 
@@ -299,7 +300,11 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
         while True:
 
             await ctx.send(f"Please send player #{num} stats, or send 'done' to finish.")
-            message = await bot.wait_for("message", check=lambda m: m.author == ctx.author and m.channel == ctx.channel)
+            message = await bot.wait_for(
+                "message",
+                check=lambda x: x.channel.id == ctx.channel.id and ctx.author.id == x.author.id,
+                timeout=None
+                )
 
             if message.content.lower() == "done":
                 break
@@ -307,41 +312,42 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
             num += 1
 
             try:
-                stats.append(message.content.split(","))
+                message.content.split(",")
             except:
                 await ctx.send("Error occured in parsing stats. Please try again, or manually report match.")
+
+            # submitter may send all stats in one message, separated by line breaks, if this is the case then append all stats
+            if "\n" in message.content:
+                for entry in message.content.split("\n"):
+                    stats.append([i.replace(" ", "").replace("\n", "") for i in entry.split(",")])
+                break
 
         output = t2a(
             header=["Player", "Score", "Shots", "Goals", "Shooting %", "Assists", "Saves"],
             body=[
-                [i[0], i[1], i[2], i[3], str(round(int(i[3])/int(i[2]), 2)*100)+"%", i[4], i[5]] for i in stats
+                [i[0], i[1], i[2], i[3],
+                 ((str(round(int(i[3])/int(i[2]), 4)*100)[:5]) if (i[2] != "0") else "0")+"%", # check for div by 0
+                 i[4], i[5]] for i in stats
             ],
             first_col_heading=True
         )
 
-        await ctx.send(embed=discord.Embed(
-            title="SkywardBot - Info",
-            description="Report sent.",
-            color=0xFF9179
-        ))
-
-    else:
-        await ctx.respond(embed=discord.Embed(
-            title="SkywardBot - Info",
-            description="Report sent.",
-            color=0xFF9179
-        ))
+    await ctx.send(embed=discord.Embed(
+        title="SkywardBot - Info",
+        description="Report sent.",
+        color=0xFF9179
+    ))
     
     await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
         color=0xFF9179,
         title=f"{team_one_tag} vs. {team_two_tag} - Reported Match",
         description=f"**{gamemode} {league.capitalize()} League - Week {week}**\n{who_won} with a score of **{score}**" \
-            + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "") \
-            + (f"\n\n```\n{output}\n```" if output else "")
+            + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
     ).set_author(
         name=ctx.author.display_name,
         icon_url=ctx.author.display_avatar
     ))
+    if output: await bot.get_channel(CHANNELS[league]).send(f"```\n{output}\n```")
 
 @bot.slash_command(name="forfeit", description="Used to report a forfeit, sends the info to a designated channel.", options=[
     discord.Option(name="league", description="League played.", choices=[
