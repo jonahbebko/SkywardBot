@@ -115,9 +115,6 @@ async def flipout(ctx):
 @bot.slash_command(name="benjamin", description="benjamin")
 async def benjamin(ctx):
     await ctx.respond("benjamin :flushed:")
-
-@bot.slash_command(name="cxrrxnt", description="cxrrxnt")
-async def cxrrxnt(ctx):
     await ctx.respond("https://cdn.discordapp.com/attachments/1031781423864090664/1078482799343976489/attachment.png")
 
 @bot.slash_command(name="source", description="Get a link to the GitHub source code for SkywardBot.")
