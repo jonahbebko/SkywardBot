@@ -174,17 +174,18 @@ async def suggest(ctx, anon, message):
 ])
 async def dm(ctx, anon, role, message):
     if ctx.author.guild_permissions.administrator:
-        await ctx.respond(f"Anonymity: {anon}\nSending message to all members with role ID **\"{discord.utils.get(ctx.guild.roles, id=role)}\"**...")
+        await ctx.respond(f"Anonymity: {anon}\nSending **\"{message}\"** to all members with role ID **{role}**...")
         if anon == "anonymous": a = "Anonymous"
         else: a = ctx.author
         # send message to all members with role
-        for member in ctx.guild.get_role(role).members:
-            await member.send(embed=discord.Embed(
-                title="SkywardBot - Message",
-                description=f"**{a}** says:\n{message}",
-                color=0xFF9179
+        for member in ctx.guild.members:
+            if int(role) in [r.id for r in member.roles]:
+                await member.send(embed=discord.Embed(
+                    title="SkywardBot - Message",
+                    description=f"**{a}** says:\n{message}",
+                    color=0xFF9179
+                    )
                 )
-            )
         await ctx.send("Sent.")
     else:
         await ctx.respond(embed=discord.Embed(
