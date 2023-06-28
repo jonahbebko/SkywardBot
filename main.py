@@ -3,8 +3,9 @@ from datetime import datetime
 from random import randint
 from table2ascii import table2ascii as t2a, PresetStyle
 
-LOG="""Last updated: May 25, 2023
-- /forfeit no longer has a ballchasing option because that makes zero sense
+LOG="""Last updated: June 28, 2023
+- `/dm` actually works now (yipee)
+As always, check `/source` for the most recent commits!
 """
 
 ROLES = {
