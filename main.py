@@ -331,7 +331,7 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
         name=ctx.author.display_name,
         icon_url=ctx.author.display_avatar
     ))
-    if output: await bot.get_channel(CHANNELS[league]).send(f"```\n{output}\n```")
+    if output: await bot.get_channel(CHANNELS[league]).send(f"```\n{output}\n```" if "https://" not in output else f"\n{output}\n")
 
 @bot.slash_command(name="forfeit", description="Used to report a forfeit, sends the info to a designated channel.", options=[
     discord.Option(name="league", description="League played.", choices=[
