@@ -4,7 +4,7 @@ from random import randint
 from table2ascii import table2ascii as t2a, PresetStyle
 
 LOG="""Last updated: June 28, 2023
-- `/dm` actually works now (yipee)
+- `/report` fixed, and now accepts image attachments
 As always, check `/source` for the most recent commits!
 """
 
@@ -286,49 +286,35 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
         await ctx.respond(embed=discord.Embed(
             title="SkywardBot - Stats (beta)",
             description="Since no ballchasing link was provided, you must enter player stats manually.\n" + \
-                "Please enter comma-separated values for statistics, one entry for each player.\n\n" + \
-                "**Each entry should be in the format:**\n```playername,score,shots,goals,assists,saves```\n\n" + \
-                "Or, you may put all entries into one message:\n```player1,score,shots,goals,assists,saves\nplayer2,score,shots,goals,assists,saves\n...```",
+                "Please enter comma-separated values for statistics, one line for each player.\n\n" + \
+                "Your message should be in this format:\n```player1,score,shots,goals,assists,saves\nplayer2,score,shots,goals,assists,saves\n...```\n" + \
+                "Or, upload an image!",
             color=0xFF9179
         ))
 
-        num: int = 1
         stats: list = []
 
-        while True:
+        message = await bot.wait_for(
+            "message",
+            check=lambda x: x.channel.id == ctx.channel.id and ctx.author.id == x.author.id,
+            timeout=None
+            )
+        
+        if message.attachments or "https://cdn.discordapp.com/attachments" in message.content:
+            output = message.attachments[0].url if message.attachments else message.content
+        else:
+            for entry in message.content.split("\n"):
+                stats.append([i.replace(" ", "").replace("\n", "") for i in entry.split(",")])
 
-            await ctx.send(f"Please send player #{num} stats, or send 'done' to finish.")
-            message = await bot.wait_for(
-                "message",
-                check=lambda x: x.channel.id == ctx.channel.id and ctx.author.id == x.author.id,
-                timeout=None
-                )
-
-            if message.content.lower() == "done":
-                break
-                
-            num += 1
-
-            try:
-                message.content.split(",")
-            except:
-                await ctx.send("Error occured in parsing stats. Please try again, or manually report match.")
-
-            # submitter may send all stats in one message, separated by line breaks, if this is the case then append all stats
-            if "\n" in message.content:
-                for entry in message.content.split("\n"):
-                    stats.append([i.replace(" ", "").replace("\n", "") for i in entry.split(",")])
-                break
-
-        output = t2a(
-            header=["Player", "Score", "Shots", "Goals", "Shooting %", "Assists", "Saves"],
-            body=[
-                [i[0], i[1], i[2], i[3],
-                 ((str(round(int(i[3])/int(i[2]), 4)*100)[:5]) if (i[2] != "0") else "0")+"%", # check for div by 0
-                 i[4], i[5]] for i in stats
-            ],
-            first_col_heading=True
-        )
+            output = t2a(
+                header=["Player", "Score", "Shots", "Goals", "Shooting %", "Assists", "Saves"],
+                body=[
+                    [i[0], i[1], i[2], i[3],
+                    ((str(round(int(i[3])/int(i[2]), 4)*100)[:5]) if (i[2] != "0") else "0")+"%", # check for div by 0
+                    i[4], i[5]] for i in stats
+                ],
+                first_col_heading=True
+            )
 
     await ctx.send(embed=discord.Embed(
         title="SkywardBot - Info",
