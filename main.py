@@ -68,7 +68,7 @@ async def on_message(ctx):
 @bot.event
 async def on_member_join(member):
     channel = bot.get_channel(1031781423864090664)
-    await channel.send(f"{member} joined at {datetime.now()[:19]}")
+    await channel.send(f"{member} joined at {str(datetime.now())[:19]}")
 
 @bot.event
 async def on_member_remove(member):
@@ -300,7 +300,7 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
             timeout=None
             )
         
-        if message.attachments or "https://cdn.discordapp.com/attachments" in message.content:
+        if message.attachments or "https://" in message.content:
             output = message.attachments[0].url if message.attachments else message.content
         else:
             for entry in message.content.split("\n"):
