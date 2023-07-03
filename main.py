@@ -68,12 +68,12 @@ async def on_message(ctx):
 @bot.event
 async def on_member_join(member):
     channel = bot.get_channel(1031781423864090664)
-    await channel.send(f"{member} joined at {str(datetime.now())[:19]}")
+    await channel.send(f":white_check_mark: {member} joined at {datetime.now()[:19]}")
 
 @bot.event
 async def on_member_remove(member):
     channel = bot.get_channel(1031781423864090664)
-    await channel.send(f"{member} left at {datetime.now()[:19]}")
+    await channel.send(f":no_entry_sign: {member} left at {datetime.now()[:19]}")
 
 @bot.slash_command(name="help", description="Show list of commands.")
 async def help(ctx):
