@@ -4,8 +4,8 @@ from random import randint
 from table2ascii import table2ascii as t2a, PresetStyle
 
 LOG="""Last updated: June 28, 2023
-- `/report` fixed, and now accepts image attachments
-As always, check `/source` for the most recent commits!
+- `/report` now checks a few things regarding matches before sending report
+As always, check `/source` to see the most recent commits!
 """
 
 ROLES = {
@@ -288,7 +288,7 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
             description="Since no ballchasing link was provided, you must enter player stats manually.\n" + \
                 "Please enter comma-separated values for statistics, one line for each player.\n\n" + \
                 "Your message should be in this format:\n```player1,score,shots,goals,assists,saves\nplayer2,score,shots,goals,assists,saves\n...```\n" + \
-                "Or, upload an image!",
+                "Or, upload images!",
             color=0xFF9179
         ))
 
@@ -300,11 +300,32 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
             timeout=None
             )
         
-        if message.attachments or "https://" in message.content:
-            output = message.attachments[0].url if message.attachments else message.content
+        if message.attachments:
+            output += "\n".join([i.url for i in message.attachments])
+        elif "https://" in message.content or "http://" in message.content:
+            output += message.content
+
+        if output:
+            if len(output.split("\n")) != sum([int(i) for i in score.split("-")]):
+                numAttachments = len(output.split("\n"))
+                numGames = sum([int(i) for i in score.split('-')])
+                await ctx.respond(embed=discord.Embed(
+                    title="SkywardBot - Error",
+                    description=f"Number of attachments does not equal number of games played.\nattachments ({numAttachments}) doesn't match games ({numGames})",
+                    color=0xFF9179
+                ))
+                return
         else:
             for entry in message.content.split("\n"):
                 stats.append([i.replace(" ", "").replace("\n", "") for i in entry.split(",")])
+            
+            if len(stats)/2 != int(gamemode[0]):
+                await ctx.respond(embed=discord.Embed(
+                    title="SkywardBot - Error",
+                    description=f"Number of players entered does not match gamemode.\nexpected players ({int(gamemode[0])*2}) doesn't match entries ({len(stats)})",
+                    color=0xFF9179
+                ))
+                return
 
             output = t2a(
                 header=["Player", "Score", "Shots", "Goals", "Shooting %", "Assists", "Saves"],
