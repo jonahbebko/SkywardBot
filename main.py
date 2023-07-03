@@ -287,7 +287,7 @@ async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag,
             description="Since no ballchasing link was provided, you must enter player stats manually.\n" + \
                 "Please enter comma-separated values for statistics, one line for each player.\n\n" + \
                 "Your message should be in this format:\n```player1,score,shots,goals,assists,saves\nplayer2,score,shots,goals,assists,saves\n...```\n" + \
-                "Or, upload images!",
+                "Or, upload images! All images must be in ONE message and can be either links or attachments.",
             color=0xFF9179
         ))
 
