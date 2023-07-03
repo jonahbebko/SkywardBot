@@ -119,7 +119,7 @@ async def benjamin(ctx):
 
 @bot.slash_command(name="source", description="Get a link to the GitHub source code for SkywardBot.")
 async def source(ctx):
-    await ctx.respond(embed=discord.Embed(title="SkywardBot - Source Code", description="You can view the source code of SkywardBot here:\nhttp://github.com/jonahbebko/SkywardBot"))
+    await ctx.respond(embed=discord.Embed(title="SkywardBot - Source Code", description="You can view the source code of SkywardBot here:\nhttp://github.com/jonahbebko/SkywardBot", color=0xFF9179))
 
 @bot.slash_command(name="log", description="See the recent updates for SkywardBot.")
 async def log(ctx):
