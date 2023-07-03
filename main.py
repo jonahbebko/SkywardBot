@@ -90,7 +90,6 @@ async def help(ctx):
 **Misc**
 `/flipout` - flipout
 `/benjamin` - benjamin
-`/cxrrxnt` - cxrrxnt
 `/ping` - Check bot latency (my wifi is fine).
 
 **Bot**
