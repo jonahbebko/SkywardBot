@@ -3,11 +3,8 @@ from datetime import datetime
 from random import randint
 from table2ascii import table2ascii as t2a, PresetStyle
 
-LOG="""Last updated: July 14, 2023
-- `/report` checks for valid week number or playoff abbreviation
-- No longer says "The application did not respond" when submitting a report
-- `team_tag` changed to `team_name`
-- cooldowns for most general usage commands
+LOG="""Last updated: June 28, 2023
+- `/report` now checks a few things regarding matches before sending report
 As always, check `/source` to see the most recent commits!
 """
 
@@ -78,7 +75,6 @@ async def on_member_remove(member):
     channel = bot.get_channel(1031781423864090664)
     await channel.send(f":no_entry_sign: {member} left at {datetime.now()[:19]}")
 
-@commands.cooldown(1, 30, commands.BucketType.channel)
 @bot.slash_command(name="help", description="Show list of commands.")
 async def help(ctx):
     await ctx.respond(embed=discord.Embed(title="SkywardBot - Help", description="""**Admin-Only**
@@ -104,7 +100,6 @@ async def help(ctx):
 
 Admins can use any command regardless of role exclusivity.""", color=0xFF9179))
 
-@commands.cooldown(1, 30, commands.BucketType.channel)
 @bot.slash_command(name="ping", description="Sends the bot's latency.")
 async def ping(ctx):
     await ctx.respond(embed=discord.Embed(
@@ -113,22 +108,18 @@ async def ping(ctx):
         color=0xFF9179
     ))
 
-@commands.cooldown(1, 10, commands.BucketType.user)
 @bot.slash_command(name="flipout", description="flipout")
 async def flipout(ctx):
     await ctx.respond("flipout :kissing_heart:")
 
-@commands.cooldown(1, 10, commands.BucketType.user)
 @bot.slash_command(name="benjamin", description="benjamin")
 async def benjamin(ctx):
     await ctx.respond("benjamin :flushed:")
 
-@commands.cooldown(1, 30, commands.BucketType.channel)
 @bot.slash_command(name="source", description="Get a link to the GitHub source code for SkywardBot.")
 async def source(ctx):
     await ctx.respond(embed=discord.Embed(title="SkywardBot - Source Code", description="You can view the source code of SkywardBot here:\nhttp://github.com/jonahbebko/SkywardBot", color=0xFF9179))
 
-@commands.cooldown(1, 30, commands.BucketType.channel)
 @bot.slash_command(name="log", description="See the recent updates for SkywardBot.")
 async def log(ctx):
     await ctx.respond(embed=discord.Embed(title="SkywardBot - Log", description=LOG, color=0xFF9179))
@@ -204,7 +195,6 @@ async def dm(ctx, anon, role, message):
             )
         )
 
-@commands.cooldown(1, 30, commands.BucketType.channel)
 @bot.slash_command(name="casterinfo", description="Sends a list of caster availability.")
 async def casterinfo(ctx):
     if ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664:
@@ -232,12 +222,12 @@ async def casterinfo(ctx):
         discord.OptionChoice(name="3v3", value="3v3")
     ], required=True),
     discord.Option(name="week", description="Week of the match", required=True),
-    discord.Option(name="team_one", description="Tag of the first team", required=True),
+    discord.Option(name="team_one_tag", description="Tag of the first team", required=True),
     discord.Option(name="score", description="Score of the match", required=True),
-    discord.Option(name="team_two", description="Tag of the second team", required=True),
+    discord.Option(name="team_two_tag", description="Tag of the second team", required=True),
     discord.Option(name="ballchasing", description="Ballchasing link (optional)", required=False)
 ])
-async def report(ctx, league, gamemode, week, team_one, score, team_two, ballchasing=None):
+async def report(ctx, league, gamemode, week, team_one_tag, score, team_two_tag, ballchasing=None):
 
     if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
         await ctx.respond("This is a DMs-only command."); return
@@ -258,15 +248,16 @@ async def report(ctx, league, gamemode, week, team_one, score, team_two, ballcha
             color=0xFF0000
         )); return
 
-    try:
-        int(week)
+    try: int(week)
     except:
-        if week not in ["WC", "QF", "SF", "GF"]:
-            await ctx.respond(embed=discord.Embed(
-                title="SkywardBot - Error",
-                description=f"**Error** in parameter `week`, given '{week}'\nWeek must be a number or valid playoff abbreviation.",
-                color=0xFF0000
-            )); return
+	
+
+    if (isinstance(week, int)) and (week not in ["WC", "QF", "SF", "GF"]):
+        await ctx.respond(embed=discord.Embed(
+        title="SkywardBot - Error",
+        description=f"**Error** in parameter `week`, given '{week}'\nWeek must be a number or valid playoff abbreviation.",
+        color=0xFF0000
+    )); return
 
     try: int(score.split("-")[0])
     except: await ctx.respond(embed=discord.Embed(
@@ -278,11 +269,11 @@ async def report(ctx, league, gamemode, week, team_one, score, team_two, ballcha
     temp = [int(i) for i in score.split("-")]
 
     if temp[0] > temp[1]:
-        who_won = f"**{team_one}** won against **{team_two}**"
+        who_won = f"**{team_one_tag}** won against **{team_two_tag}**"
     elif temp[0] < temp[1]:
-        who_won = f"**{team_one}** lost to **{team_two}**"
+        who_won = f"**{team_one_tag}** lost to **{team_two_tag}**"
     else:
-        who_won = f"**{team_one}** and **{team_two}** tied"
+        who_won = f"**{team_one_tag}** and **{team_two_tag}** tied"
 
     if ("ballchasing.com/" not in str(ballchasing)) and (ballchasing != None):
         await ctx.respond(embed=discord.Embed(
@@ -365,7 +356,7 @@ async def report(ctx, league, gamemode, week, team_one, score, team_two, ballcha
     
     await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
         color=0xFF9179,
-        title=f"{team_one} vs. {team_two} - Reported Match",
+        title=f"{team_one_tag} vs. {team_two_tag} - Reported Match",
         description=f"**{gamemode} {league.capitalize()} League - Week {week}**\n{who_won} with a score of **{score}**" \
             + (f"\n[**Ballchasing link**]({ballchasing})" if ballchasing else "")
     ).set_author(
@@ -386,14 +377,14 @@ async def report(ctx, league, gamemode, week, team_one, score, team_two, ballcha
         discord.OptionChoice(name="3v3", value="3v3")
     ], required=True),
     discord.Option(name="week", description="Week of the match (set to 0 for playoffs)", required=True),
-    discord.Option(name="team_one", description="Name of the first team (if single FF, this is the FFing team)",required=True),
-    discord.Option(name="team_two", description="Name of the second team", required=True),
+    discord.Option(name="team_one_tag", description="Tag of the first team (if single FF, this is the FFing team)",required=True),
+    discord.Option(name="team_two_tag", description="Tag of the second team", required=True),
     discord.Option(name="fftype", description="Type of forfeit", required=True, choices=[
         discord.OptionChoice(name="Single Forfeit", value="single"),
         discord.OptionChoice(name="Double Forfeit", value="double")
     ])
 ])
-async def forfeit(ctx, league, gamemode, week, team_one, team_two, fftype):
+async def forfeit(ctx, league, gamemode, week, team_one_tag, team_two_tag, fftype):
 
     if not (ctx.channel.type == discord.ChannelType.private or ctx.channel.id == 1031781423864090664):
         await ctx.respond(embed=discord.Embed(
@@ -418,21 +409,18 @@ async def forfeit(ctx, league, gamemode, week, team_one, team_two, fftype):
             color=0xFF0000
         )); return
 
-    try:
-        int(week)
-    except:
-        if week not in ["WC", "QF", "SF", "GF"]:
-            await ctx.respond(embed=discord.Embed(
-                title="SkywardBot - Error",
-                description=f"**Error** in parameter `week`, given '{week}'\nWeek must be a number or valid playoff abbreviation.",
-                color=0xFF0000
-            )); return
+    if (isinstance(week, int)) and (week not in ["WC", "QF", "SF", "GF"]):
+        await ctx.respond(embed=discord.Embed(
+        title="SkywardBot - Error",
+        description=f"**Error** in parameter `week`, given '{week}'\nWeek must be a number or valid playoff abbreviation.",
+        color=0xFF0000
+    )); return
     
     if fftype == "single":
         await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
             color=0xFF0000,
-            title=f"{team_one} vs. {team_two} - Reported Single Forfeit",
-            description=f"**{gamemode} {league.capitalize()} League - Week {week}**\n**{team_one}** FF'd against **{team_two}**"
+            title=f"{team_one_tag} vs. {team_two_tag} - Reported Single Forfeit",
+            description=f"**{gamemode} {league.capitalize()} League - Week {week}**\n**{team_one_tag}** FF'd against **{team_two_tag}**"
         ).set_author(
             name=ctx.author.display_name,
             icon_url=ctx.author.display_avatar
@@ -441,8 +429,8 @@ async def forfeit(ctx, league, gamemode, week, team_one, team_two, fftype):
     elif fftype == "double":
         await bot.get_channel(CHANNELS[league]).send(embed=discord.Embed(
             color=0xFF0000,
-            title=f"{team_one} vs. {team_two} - Reported Double Forfeit",
-            description=f"**{gamemode} {league} League - Week {week}**\n**{team_one}** and **{team_two}** double FF'd"
+            title=f"{team_one_tag} vs. {team_two_tag} - Reported Double Forfeit",
+            description=f"**{gamemode} {league} League - Week {week}**\n**{team_one_tag}** and **{team_two_tag}** double FF'd"
         ).set_author(
             name=ctx.author.display_name,
             icon_url=ctx.author.display_avatar
