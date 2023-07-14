@@ -1,4 +1,6 @@
 import discord #py-cord, not discord.py
+import traceback, sys
+from discord.ext import commands
 from datetime import datetime
 from random import randint
 from table2ascii import table2ascii as t2a, PresetStyle
@@ -41,6 +43,19 @@ intents.message_content = True
 intents.members = True
 
 bot = discord.Bot(intents=intents)
+
+@bot.event
+async def on_application_command_error(ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+        await ctx.respond(f'Slow down! Use this command again in **{round(error.retry_after,1)}s.**', ephemeral=True)
+    else:
+        await ctx.respond('Something went wrong. The error has been reported to the developers.\n`{error}`', ephemeral=True)
+        await bot.get_user(JONER).send(embed=discord.Embed(
+            title="SkywardBot - Uncaught Exception",
+            description=desc+'\n'+''.join(traceback.StackSummary.extract(traceback.walk_stack(None)).format()),
+            color=0xFF0000
+            )
+        )
 
 @bot.event
 async def on_ready():
