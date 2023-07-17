@@ -101,7 +101,7 @@ async def on_message(ctx):
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
     elif ctx.channel.id == 1025194497665142794:
         channel = bot.get_channel(1130487355426492446)
-        channel.send(f"From: {ctx.author.name} ({ctx.author.id}) at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\nMessage: {ctx.content}")
+        await channel.send(f"From: {ctx.author.name} ({ctx.author.id}) at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\nMessage: {ctx.content}")
     if "ratio" in ctx.content.lower() and ctx.channel.id not in NORATIO_CHANNELS:
         if randint(0, 1):
             await ctx.add_reaction("⬆️")
