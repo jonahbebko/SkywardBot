@@ -1,5 +1,6 @@
 token.txt
 log.txt
+credentials.json
 api
 restart
 stop
