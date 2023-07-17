@@ -1,4 +1,8 @@
 token.txt
 log.txt
+api
 restart
 stop
+*.save
+*.pyc
+*.pyo
