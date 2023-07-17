@@ -13,6 +13,27 @@ LOG="""Last updated: July 14, 2023
 As always, check `/source` to see the most recent commits!
 """
 
+NORATIO_CHANNELS = [
+    1022240859598618667,
+    1028759095802613821,
+    1054580545067155516,
+    991656468258508840,
+    1087840813091917916,
+    1084898882804252712,
+    1072274227471859712,
+    991020848766926949,
+    1055651522966474814,
+    991645524837027870,
+    1022883762356363345,
+    1095863844347334707,
+    1054572208258830416,
+    991642137512906822,
+    1084244657623535726,
+    1021998533806661722,
+    1023710972134838402,
+    1104574435895296000,
+    1034667026385489932
+]
 ROLES = {
     "captain": 991634383482138714,
     "orgrep": 1021998653612769280,
@@ -49,10 +70,11 @@ async def on_application_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
         await ctx.respond(f'Slow down! Use this command again in **{round(error.retry_after,1)}s.**', ephemeral=True)
     else:
+        description = error.__class__.__name__ + ': ' + str(error)
         await ctx.respond('Something went wrong. The error has been reported to the developers.\n`{error}`', ephemeral=True)
         await bot.get_user(JONER).send(embed=discord.Embed(
             title="SkywardBot - Uncaught Exception",
-            description=desc+'\n'+''.join(traceback.StackSummary.extract(traceback.walk_stack(None)).format()),
+            description=description+'\n'+''.join(traceback.StackSummary.extract(traceback.walk_stack(None)).format()),
             color=0xFF0000
             )
         )
@@ -70,14 +92,17 @@ async def on_message(ctx):
         channel = bot.get_channel(int(ctx.content.split()[1]))
         await channel.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
-    if ctx.content.startswith('!!!dm'):
+    elif ctx.content.startswith('!!!dm'):
         if ctx.content.split()[1] in USERALISES:
             user = bot.get_user(USERALISES[ctx.content.split()[1]])
         else:
             user = bot.get_user(int(ctx.content.split()[1]))
         await user.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
-    if "ratio" in ctx.content.lower():
+    elif ctx.channel.id == 1025194497665142794:
+        channel = bot.get_channel(1130487355426492446)
+        channel.send(f"From: {ctx.author.name} ({ctx.author.id}) at {datetime.now()[:19]}\nMessage: {ctx.content}")
+    if "ratio" in ctx.content.lower() and ctx.channel.id not in NORATIO_CHANNELS:
         if randint(0, 1):
             await ctx.add_reaction("⬆️")
         else:
@@ -86,12 +111,12 @@ async def on_message(ctx):
 @bot.event
 async def on_member_join(member):
     channel = bot.get_channel(1031781423864090664)
-    await channel.send(f":white_check_mark: {member} joined at {datetime.now()[:19]}")
+    await channel.send(f":white_check_mark: {member.name} ({member.id}) joined at {datetime.now()[:19]}")
 
 @bot.event
 async def on_member_remove(member):
     channel = bot.get_channel(1031781423864090664)
-    await channel.send(f":no_entry_sign: {member} left at {datetime.now()[:19]}")
+    await channel.send(f":no_entry_sign: {member.name} ({member.id}) left at {datetime.now()[:19]}")
 
 @commands.cooldown(1, 30, commands.BucketType.channel)
 @bot.slash_command(name="help", description="Show list of commands.")
@@ -103,8 +128,8 @@ async def help(ctx):
 `/casterinfo` - Get a list of casters and their availability through UNU.
 
 **Match Reporting** (Captains and DMs only)
-`/report <league> <gamemode> <week> <ID> <score-score> <ID> [ballchasing]` - Report a match.
-`/forfeit <league> <gamemode> <week> <ID> <ID> <type>` - Report a forfeit.
+`/report <league> <gamemode> <week> <team1> <score-score> <team2> [ballchasing]` - Report a match.
+`/forfeit <league> <gamemode> <week> <team1> <team2> <type>` - Report a forfeit.
 
 **Misc**
 `/flipout` - flipout
@@ -112,6 +137,7 @@ async def help(ctx):
 `/ping` - Check bot latency (my wifi is fine).
 
 **Bot**
+`/help` - Show this message.
 `/log` - See recent changes to SkywardBot.
 `/source` - Get a link to the GitHub source code for SkywardBot.
 `/bug <anonymous> <message>` - Report a bug (or funny meme) to joner himself.
