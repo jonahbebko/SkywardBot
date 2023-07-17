@@ -99,7 +99,7 @@ async def on_message(ctx):
             user = bot.get_user(int(ctx.content.split()[1]))
         await user.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
-    elif ctx.channel.id == 1025194497665142794:
+    elif isinstance(ctx.channel, discord.DMChannel):
         channel = bot.get_channel(1130487355426492446)
         await channel.send(f"From: {ctx.author.name} ({ctx.author.id}) at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\nMessage: {ctx.content}")
     if "ratio" in ctx.content.lower() and ctx.channel.id not in NORATIO_CHANNELS:
@@ -110,11 +110,13 @@ async def on_message(ctx):
 
 @bot.event
 async def on_member_join(member):
+    if ctx.message.guild.id != 991005374314328124: return
     channel = bot.get_channel(1031781423864090664)
     await channel.send(f":white_check_mark: {member.name} ({member.id}) joined at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 @bot.event
 async def on_member_remove(member):
+    if ctx.message.guild.id != 991005374314328124: return
     channel = bot.get_channel(1031781423864090664)
     await channel.send(f":no_entry_sign: {member.name} ({member.id}) left at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
