@@ -101,7 +101,7 @@ async def on_message(ctx):
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
     elif ctx.channel.id == 1025194497665142794:
         channel = bot.get_channel(1130487355426492446)
-        channel.send(f"From: {ctx.author.name} ({ctx.author.id}) at {datetime.now()[:19]}\nMessage: {ctx.content}")
+        channel.send(f"From: {ctx.author.name} ({ctx.author.id}) at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\nMessage: {ctx.content}")
     if "ratio" in ctx.content.lower() and ctx.channel.id not in NORATIO_CHANNELS:
         if randint(0, 1):
             await ctx.add_reaction("⬆️")
@@ -111,12 +111,12 @@ async def on_message(ctx):
 @bot.event
 async def on_member_join(member):
     channel = bot.get_channel(1031781423864090664)
-    await channel.send(f":white_check_mark: {member.name} ({member.id}) joined at {datetime.now()[:19]}")
+    await channel.send(f":white_check_mark: {member.name} ({member.id}) joined at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 @bot.event
 async def on_member_remove(member):
     channel = bot.get_channel(1031781423864090664)
-    await channel.send(f":no_entry_sign: {member.name} ({member.id}) left at {datetime.now()[:19]}")
+    await channel.send(f":no_entry_sign: {member.name} ({member.id}) left at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 @commands.cooldown(1, 30, commands.BucketType.channel)
 @bot.slash_command(name="help", description="Show list of commands.")
