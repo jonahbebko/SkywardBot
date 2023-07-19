@@ -74,7 +74,7 @@ async def on_application_command_error(ctx, error):
         await ctx.respond('Something went wrong. The error has been reported to the developers.\n`{error}`', ephemeral=True)
         await bot.get_user(JONER).send(embed=discord.Embed(
             title="SkywardBot - Uncaught Exception",
-            description=description+'\n'+''.join(traceback.StackSummary.extract(traceback.walk_stack(None)).format()),
+            description=description+f'\nUser: {ctx.author}\nCommand: {ctx.envoked_with}\n'+''.join(traceback.StackSummary.extract(traceback.walk_stack(None)).format()),
             color=0xFF0000
             )
         )
@@ -110,13 +110,11 @@ async def on_message(ctx):
 
 @bot.event
 async def on_member_join(member):
-    if ctx.message.guild.id != 991005374314328124: return
     channel = bot.get_channel(1031781423864090664)
     await channel.send(f":white_check_mark: {member.name} ({member.id}) joined at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 @bot.event
 async def on_member_remove(member):
-    if ctx.message.guild.id != 991005374314328124: return
     channel = bot.get_channel(1031781423864090664)
     await channel.send(f":no_entry_sign: {member.name} ({member.id}) left at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
