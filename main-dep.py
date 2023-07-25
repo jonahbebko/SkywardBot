@@ -80,6 +80,11 @@ async def on_application_command_error(ctx, error):
 async def on_ready():
     print(f"{bot.user} is online")
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Skyward Series"))
+    # detect if the last message in channel 1021832392572424192 is by the bot
+    admin_channel = bot.get_channel(1021832392572424192)
+    async for message in channel.history(limit=1):
+        if message.author == bot.user:
+            await admin_channel.send("online")
 
 @bot.event
 async def on_message(ctx):

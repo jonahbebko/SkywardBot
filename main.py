@@ -1,5 +1,5 @@
 import discord #py-cord, not discord.py
-import traceback, sys
+import traceback, os
 from discord.ext import commands
 from datetime import datetime
 from random import randint
@@ -99,6 +99,10 @@ async def on_message(ctx):
             user = bot.get_user(int(ctx.content.split()[1]))
         await user.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
+    elif ctx.content == "killswitch activate" and ctx.author.guild_permissions.administrator:
+        await ctx.respond("k gimme like one second")
+        await bot.close()
+        os.system("./restart dep")
     elif isinstance(ctx.channel, discord.DMChannel):
         channel = bot.get_channel(1130487355426492446)
         await channel.send(f"From: {ctx.author.name} ({ctx.author.id}) at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\nMessage: {ctx.content}")
