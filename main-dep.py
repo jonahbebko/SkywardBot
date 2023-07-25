@@ -5,12 +5,9 @@ from datetime import datetime
 from random import randint
 from table2ascii import table2ascii as t2a, PresetStyle
 
-LOG="""Last updated: July 14, 2023
-- `/report` checks for valid week number or playoff abbreviation
-- No longer says "The application did not respond" when submitting a report
-- `team_tag` changed to `team_name`
-- cooldowns for most general usage commands
-As always, check `/source` to see the most recent commits!
+LOG="""Last updated: July 25, 2023
+SkywardBot is now deprecated. Feel free to use the other commands for fun!
+Run `/report` in DMs to see where to submit reports.
 """
 
 NORATIO_CHANNELS = [
@@ -127,9 +124,9 @@ async def help(ctx):
 **Casters** (DMs only)
 `/casterinfo` - Get a list of casters and their availability through UNU.
 
-**Match Reporting** (Captains and DMs only)
-`/report <league> <gamemode> <week> <team1> <score-score> <team2> [ballchasing]` - Report a match.
-`/forfeit <league> <gamemode> <week> <team1> <team2> <type>` - Report a forfeit.
+**Match Reporting** ***[DEPRECATED]*** (Captains and DMs only)
+`/report` - Report a match.
+`/forfeit` - Report a forfeit.
 
 **Misc**
 `/flipout` - flipout
