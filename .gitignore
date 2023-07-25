@@ -4,6 +4,7 @@ log.txt
 credentials.json
 api
 restart
+restart-dep
 stop
 *.save
 *.pyc
