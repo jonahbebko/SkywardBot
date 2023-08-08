@@ -1,5 +1,5 @@
 import discord #py-cord, not discord.py
-import traceback, sys
+import traceback, json
 from discord.ext import commands
 from datetime import datetime
 from random import randint
@@ -62,6 +62,8 @@ intents.members = True
 
 bot = discord.Bot(intents=intents)
 
+json_commands = json.load(open("commands.json", "r"))
+
 @bot.event
 async def on_application_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
@@ -80,9 +82,6 @@ async def on_application_command_error(ctx, error):
 async def on_ready():
     print(f"{bot.user} is online in deprecation mode")
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Skyward Series"))
-    # detect if the last message in channel 1021832392572424192 is by the bot
-    admin_channel = bot.get_channel(1021832392572424192)
-    await admin_channel.send("online")
 
 @bot.event
 async def on_message(ctx):
@@ -107,6 +106,29 @@ async def on_message(ctx):
             await ctx.add_reaction("⬆️")
         else:
             await ctx.add_reaction("⬇️")
+    if ctx.content.startswith(",") and ctx.author.guild_permissions.administrator:
+        bruh = ctx.content.split(" ")[0]
+        match bruh:
+            case ",add":
+                if ctx.content.split(" ")[1] in json_commands:
+                    await ctx.channel.send("Command already exists.")
+                else:
+                    json_commands[ctx.content.split(" ")[1]] = " ".join(ctx.content.split(" ")[2:])
+                    await ctx.channel.send("Command added.")
+            case ",delete":
+                if ctx.content.split(" ")[1] in json_commands:
+                    del json_commands[ctx.content.split(" ")[1]]
+                    await ctx.channel.send("Command deleted.")
+                else:
+                    await ctx.channel.send("Command does not exist.")
+            case ",list":
+                await ctx.channel.send("```" + "\n".join([f"[{key}]: {value}" for key, value in json_commands.items()]) + "```")
+            case _:
+                if ctx.content.split(" ")[0][1:] in json_commands:
+                    await ctx.channel.send(json_commands[ctx.content.split(" ")[0][1:]])
+                else:
+                    await ctx.channel.send("Command does not exist.")
+        json.dump(json_commands, open("commands.json", "w"))
 
 @bot.event
 async def on_member_join(member):
