@@ -106,7 +106,10 @@ async def on_message(ctx):
             await ctx.add_reaction("⬆️")
         else:
             await ctx.add_reaction("⬇️")
-    if ctx.content.startswith(",") and ctx.author.guild_permissions.administrator:
+    if ctx.content.startswith(","):
+        if not ctx.author.guild_permissions.administrator:
+            await ctx.channel.send("Comma commands are admin-only!", ephemeral=True)
+            return
         bruh = ctx.content.split(" ")
         if len(bruh) == 1 and bruh[0][1:] in ["add", "delete", "edit"]:
             await ctx.channel.send(f"{'Three' if bruh[0][1:] == 'add' else 'Two'} arguments required."); return
