@@ -1,6 +1,7 @@
 .pid
 token.txt
 log.txt
+commands.json
 credentials.json
 api
 restart
