@@ -108,8 +108,8 @@ async def on_message(ctx):
             await ctx.add_reaction("⬇️")
     if ctx.content.startswith(",") and ctx.author.guild_permissions.administrator:
         bruh = ctx.content.split(" ")
-        if len(bruh) == 1 and bruh[0][1:] in ["add", "delete", "edit", "list"]:
-            await ctx.channel.send("Two arguments required."); return
+        if len(bruh) == 1 and bruh[0][1:] in ["add", "delete", "edit"]:
+            await ctx.channel.send(f"{'Three' if bruh[0][1] == "add" else 'Two'} arguments required."); return
         if len(bruh) != 1 and bruh[1][1:] in ["add", "delete", "edit", "list"]:
             await ctx.channel.send("pls don't do that :("); return
         match bruh[0]:
