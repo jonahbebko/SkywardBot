@@ -87,11 +87,11 @@ async def on_ready():
 async def on_message(ctx):
     if ctx.author == bot.user:
         return
-    if ctx.content.startswith('!!!send'):
+    if ctx.content.startswith('!!!send') and ctx.author.id == JONER:
         channel = bot.get_channel(int(ctx.content.split()[1]))
         await channel.send(' '.join(ctx.content.split()[2:]))
         await ctx.channel.send(f"Sent: {ctx.content.split()[1]} - {' '.join(ctx.content.split()[2:])}")
-    elif ctx.content.startswith('!!!dm'):
+    elif ctx.content.startswith('!!!dm') and ctx.author.id == JONER:
         if ctx.content.split()[1] in USERALISES:
             user = bot.get_user(USERALISES[ctx.content.split()[1]])
         else:
