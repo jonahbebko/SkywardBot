@@ -132,6 +132,13 @@ async def on_message(ctx):
                 else:
                     json_commands[ctx.content.split(" ")[1]] = " ".join(bruh[2:])
                     await ctx.channel.send("Command does not exist, but added anyway.")
+            case ',rename':
+                if bruh[1] in json_commands:
+                    json_commands[bruh[2]] = json_commands[bruh[1]]
+                    del json_commands[bruh[1]]
+                    await ctx.channel.send("Command renamed.")
+                else:
+                    await ctx.channel.send("Command does not exist.")
             case ",list":
                 await ctx.channel.send("```" + "\n".join([f"[{key}]: {value[:50] + ('...' if len(value) > 50 else '')}" for key, value in json_commands.items()]) + "```")
             case _:
