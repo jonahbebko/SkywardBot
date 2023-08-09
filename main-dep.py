@@ -73,7 +73,7 @@ async def on_application_command_error(ctx, error):
         await ctx.respond('Something went wrong. The error has been reported to the developers.\n`{error}`', ephemeral=True)
         await bot.get_user(JONER).send(embed=discord.Embed(
             title="SkywardBot - Uncaught Exception",
-            description=description+f'\nUser: {ctx.author}\nCommand: {ctx.envoked_with}\n'+''.join(traceback.StackSummary.extract(traceback.walk_stack(None)).format()),
+            description=description+f'\nUser: {ctx.author}\nCommand: {ctx.command.qualified_name}\n'+''.join(traceback.StackSummary.extract(traceback.walk_stack(None)).format()),
             color=0xFF0000
             )
         )
@@ -266,28 +266,21 @@ async def suggest(ctx, anon, message):
     discord.Option(name="role", description="The ID of the role to send the message to.", type=int, required=True),
     discord.Option(name="message", description="The message to send.", required=True)
 ])
+@commands.has_permissions(administrator=True)
 async def dm(ctx, anon, role, message):
-    if ctx.author.guild_permissions.administrator:
-        await ctx.respond(f"Anonymity: {anon}\nSending **\"{message}\"** to all members with role ID **{role}**...")
-        if anon == "anonymous": a = "Anonymous"
-        else: a = ctx.author
-        # send message to all members with role
-        for member in ctx.guild.members:
-            if int(role) in [r.id for r in member.roles]:
-                await member.send(embed=discord.Embed(
-                    title="SkywardBot - Message",
-                    description=f"**{a}** says:\n{message}",
-                    color=0xFF9179
-                    )
+    await ctx.respond(f"Anonymity: {anon}\nSending **\"{message}\"** to all members with role ID **{role}**...")
+    if anon == "anonymous": a = "Anonymous"
+    else: a = ctx.author
+    guild = bot.get_guild(991005374314328124)
+    for member in guild.members:
+        if int(role) in [r.id for r in member.roles]:
+            await member.send(embed=discord.Embed(
+                title="SkywardBot - Message",
+                description=f"**{a}** says:\n{message}",
+                color=0xFF9179
                 )
-        await ctx.send("Sent.")
-    else:
-        await ctx.respond(embed=discord.Embed(
-            title="SkywardBot - Error",
-            description="You must be an administrator to use this command.",
-            color=0xFF0000
-            ), ephemeral=True
-        )
+            )
+    await ctx.send("Sent.")
 
 @commands.cooldown(1, 30, commands.BucketType.channel)
 @bot.slash_command(name="casterinfo", description="Sends a list of caster availability.")
