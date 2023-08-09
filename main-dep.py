@@ -117,7 +117,7 @@ async def on_message(ctx):
                 if bruh[1] in json_commands:
                     await ctx.channel.send("Command already exists.")
                 else:
-                    json_commands[ctx.content.split(" ")[1]] = " ".join(bruh[2:])
+                    json_commands[ctx.content.split(" ")[1]] = " ".join(bruh[2:]).replace("\"", "\'")
                     await ctx.channel.send("Command added.")
             case ",delete":
                 if bruh[1] in json_commands:
@@ -140,7 +140,11 @@ async def on_message(ctx):
                 else:
                     await ctx.channel.send("Command does not exist.")
             case ",list":
-                await ctx.channel.send("```" + "\n".join([f"[{key}]: {value[:50] + ('...' if len(value) > 50 else '')}" for key, value in json_commands.items()]) + "```")
+                l = []
+                for key, value in json_commands.items():
+                    value = value.replace("```", "")
+                    l.append(f"**,{key}**\n```{value[:100] + ('...' if len(value) > 100 else '')}```")
+                await ctx.channel.send("\n".join(l))
             case _:
                 if bruh[0][1:] in json_commands:
                     await ctx.channel.send(f"{ctx.author.display_name}: {json_commands[bruh[0][1:]]}")
