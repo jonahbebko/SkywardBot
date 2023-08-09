@@ -119,7 +119,7 @@ async def on_message(ctx):
                 else:
                     json_commands[ctx.content.split(" ")[1]] = " ".join(bruh[2:]).replace("\"", "\'")
                     await ctx.channel.send("Command added.")
-            case ",delete" | ",remove":
+            case ",delete":
                 if bruh[1] in json_commands:
                     del json_commands[bruh[1]]
                     await ctx.channel.send("Command deleted.")
