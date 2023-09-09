@@ -289,6 +289,7 @@ async def dm(ctx, anon, role, message):
 async def tweet(ctx, tweet):
     social_feed = bot.get_channel(1022323131827880027)
     await social_feed.send(f"[New Tweet from Skyward Series!]({tweet})")
+    await ctx.respond("ok nerd")
 
 @commands.cooldown(1, 30, commands.BucketType.channel)
 @bot.slash_command(name="casterinfo", description="Sends a list of caster availability.")
