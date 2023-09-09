@@ -282,6 +282,14 @@ async def dm(ctx, anon, role, message):
             )
     await ctx.send("Sent.")
 
+@bot.slash_command(name="tweet", description="Sends a tweet in #social-feed.", options=[
+    discord.Option(name="tweet", description="Link to the tweet.", type=str, required=True)
+])
+@commands.has_permissions(administrator=True)
+async def tweet(ctx, tweet):
+    social_feed = bot.get_channel(1022323131827880027)
+    await social_feed.send(f"[New Tweet from Skyward Series!]({tweet})")
+
 @commands.cooldown(1, 30, commands.BucketType.channel)
 @bot.slash_command(name="casterinfo", description="Sends a list of caster availability.")
 async def casterinfo(ctx):
